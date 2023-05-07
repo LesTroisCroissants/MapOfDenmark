@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<GridPane fx:id="gridpane" gridLinesVisible="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="591.0" prefWidth="914.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="program.controller.Controller">
+    <columnConstraints>
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="245.0" />
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints maxHeight="1.7976931348623157E308" minHeight="32.0" prefHeight="529.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="34.0" minHeight="34.0" prefHeight="34.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="28.0" minHeight="28.0" prefHeight="28.0" vgrow="SOMETIMES" />
+    </rowConstraints>
+    <Canvas fx:id="canvas" height="414.0" width="712.0" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" />
+    <HBox alignment="CENTER" maxHeight="38.0" maxWidth="Infinity" minHeight="38.0" prefHeight="38.0" prefWidth="1164.0" GridPane.halignment="CENTER" GridPane.rowIndex="1">
+        <Label fx:id="zoomLevel" contentDisplay="TOP" minWidth="-Infinity" text="Zoom: XX%">
+         <HBox.margin>
+            <Insets left="10.0" />
+         </HBox.margin>
+      </Label>
+      <Region disable="true" maxHeight="38.0" minHeight="38.0" prefHeight="200.0" prefWidth="200.0" HBox.hgrow="SOMETIMES" />
+        <Label fx:id="errorLabel" alignment="CENTER" minWidth="-Infinity" text="Error message label here!">
+         <HBox.margin>
+            <Insets right="10.0" />
+         </HBox.margin>
+      </Label>
+    </HBox>
+    <TextField fx:id="textField" alignment="BOTTOM_LEFT" onKeyTyped="#handleKeyTyped" prefWidth="1164.0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.valignment="BOTTOM" GridPane.vgrow="ALWAYS" />
+    <stylesheets>
+        <URL value="@style.css" />
+    </stylesheets>
+</GridPane>

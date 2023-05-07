@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.text.TextFlow?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="program.controller.ControllerHelper">
+   <children>
+      <TextFlow layoutX="12.0" layoutY="7.0" prefHeight="385.0" prefWidth="579.0" textAlignment="CENTER">
+         <children>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="— — — Program information — — —&#10; " />
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="FYPMAP version 1.0&#10;&#10; " />
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Designed and developed by Annabell Nørdam, Johan Brandi, Niklas Christensen, Olivier-Baptiste Hansen and Philip Pedersen.&#10;&#10; " />
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="This program was developed in context of the course “First-year Project: Map of Denmark. Visualization, Navigation, Searching, and Route Planning” in tandem with the course “Algorithms and Data Structures” at the IT-University of Copenhagen in 2023." />
+         </children>
+      </TextFlow>
+   </children>
+</AnchorPane>

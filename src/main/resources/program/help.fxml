@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.text.TextFlow?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="program.controller.ControllerHelper">
+    <children>
+        <TextFlow layoutX="12.0" layoutY="7.0" prefHeight="131.0" prefWidth="574.0" textAlignment="CENTER">
+         <children>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="— — — Help — — —&#10;&#10;On the map drag while holding down the right mouse button to pan and use the mouse pad or the '+'/'-'-buttons to zoom.&#10;&#10;The input field constitutes the means with which the program is interacted with, for functionality other than viewing, zooming and panning. By typing an address, the map will find, show and select the address. It also accepts the following commands and their abbreviations shown in parentheses:" />
+         </children></TextFlow>
+      <TextFlow layoutX="10.0" layoutY="147.0" prefHeight="244.0" prefWidth="574.0">
+         <children>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="-about&#10;&#10;Shows information about the program such as version and development team.&#10;&#10;-q&#10;&#10;Deselects a selected point.&#10;&#10;-display (-d):&#10;&#10;Changes the visual style of the map to one specified after the command. Use -help to see available styles.&#10;&#10;-walk (-w), -bike (-b) and -car (-c):&#10;&#10;Sets the current mode of transportation used for route planning to either walking, biking or driving.&#10;&#10;-as:&#10;&#10;When -as is written between an address and an ID it marks the address as a point of interest with the given ID, which henceforth suffices to refer to this address.&#10;&#10;-poi (-p):&#10;&#10;Displays the points of interest currently defined in the program.&#10;&#10;-to (-t):&#10;&#10;Proposes a route from the currently selected address TO one written after the command.&#10;&#10;-from (-f):&#10;&#10;Proposes a route to the currently selected address FROM one written after the command.&#10;&#10;-steps (-s):&#10;&#10;Shows the itinerary of a currently proposed route in details.&#10;&#10;-load??????????" />
+         </children>
+      </TextFlow>
+    </children>
+</AnchorPane>

@@ -1,0 +1,8 @@
+* {
+    -fx-color-label-visible: blueviolet;
+    -fx-font-size: 14px;
+}
+
+canvas {
+    background-color: black;
+}

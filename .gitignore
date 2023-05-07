@@ -1,0 +1,10 @@
+DS_*
+.DS_Store
+.idea
+.gradle
+**/build/**
+.vscode
+bin
+*.zip
+*.osm
+*.obj
