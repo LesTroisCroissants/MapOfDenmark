@@ -2,6 +2,7 @@ package program.controller;
 
 import program.model.Model;
 import program.model.ModelContact;
+import program.model.POIRegistry;
 import program.shared.MapElement;
 import program.shared.MapPoint;
 import program.shared.Point;
@@ -24,15 +25,21 @@ public class CommandExecutor {
     }
 
     public void addressSearch(String address){
-        MapPoint me = model.addressSearch(address);
-        selectElement(me);
+        MapPoint mapPoint = model.checkPOIRegistry(address);
+        if (mapPoint == null) {
+            mapPoint = model.addressSearch(address);
+        }
+        selectElement(mapPoint);
     }
 
     public void planRoute(String address, boolean to) throws CommandParser.IllegalCommandException {
         if (selectedElement == null) throw new CommandParser.IllegalCommandException("Cannot find path to " + address + " with no start destination.");
-        MapPoint me = model.addressSearch(address);
-        if (to) model.planRoute(selectedElement, me);
-        else model.planRoute(me, selectedElement);
+        MapPoint mapPoint = model.checkPOIRegistry(address);
+        if (mapPoint == null) {
+            mapPoint = model.addressSearch(address);
+        }
+        if (to) model.planRoute(selectedElement, mapPoint);
+        else model.planRoute(mapPoint, selectedElement);
         controller.draw();
     }
 
@@ -43,6 +50,8 @@ public class CommandExecutor {
 
     public void quitSelection(){
         selectedElement = null;
+        controller.clearSelection();
+
     }
 
     public void setPOI(String id, String address){

@@ -215,6 +215,12 @@ public class Controller implements Initializable {
         //System.out.println((System.nanoTime() - start) / 1000000);
     }
 
+    public void clearSelection() {
+        focusedElements.clear();
+        model.clearRoute();
+        draw();
+    }
+
     public void showHelpPopup(){
         view.showHelpPopup();
     }

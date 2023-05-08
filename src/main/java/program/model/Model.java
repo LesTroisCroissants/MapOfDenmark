@@ -33,7 +33,7 @@ public class Model implements ModelContact{
         addressBook = AddressBook.getInstance();
         edges = new ArrayList<>();
 
-        String toOpen = "/Users/philip/Library/CloudStorage/OneDrive-ITU/uni/Semester 2/FYPMO/BFST23Group12/src/main/nyborg.zip";
+        String toOpen = "C:\\Users\\annab\\Documents\\GitHub\\MapOfDenmark\\src\\main\\java\\program\\shared\\map.zip";
         open(toOpen);
 
         poiRegistry = POIRegistry.getInstance();
@@ -99,6 +99,10 @@ public class Model implements ModelContact{
         }
     }
 
+    public void clearRoute() {
+        getPlannedRoute().clear();
+    }
+
     @Override
     public List<MapRoadSegment> getPlannedRoute() {
         return plannedRoute;
@@ -159,8 +163,8 @@ public class Model implements ModelContact{
     public void setPOI(String id, String address) {
         // Can keep nearest neighbor on save
         try {
-            MapElement mapElementAddress = addressSearch(address);
-            poiRegistry.putPOI(id, mapElementAddress);
+            MapPoint mapPointAddress = addressSearch(address);
+            poiRegistry.putPOI(id, mapPointAddress);
         } catch (AddressParser.InvalidAddressException e) {
             throw e;
         }
@@ -172,6 +176,15 @@ public class Model implements ModelContact{
         poiRegistry.putPOI(id, lat, lon);
     }
 
+    public MapPoint checkPOIRegistry(String id) {
+        MapPoint mapPoint = null;
+        try {
+            mapPoint = (MapPoint) poiRegistry.getPOI(id);
+        } catch (IllegalArgumentException e) {
+            return mapPoint;
+        }
+        return mapPoint;
+    }
     @Override
     public void setTheme(String theme) {
         settings.setTheme(theme);

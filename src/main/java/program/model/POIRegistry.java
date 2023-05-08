@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class POIRegistry {
-    private final Map<String, MapElement> pointsOfInterest;
+    private final Map<String, MapPoint> pointsOfInterest;
     private static POIRegistry registry;
 
     public static POIRegistry getInstance(){
@@ -22,10 +22,10 @@ public class POIRegistry {
     /**
      * Adds a POI from a given Address with a given name
      * @param id
-     * @param mapElement
+     * @param mapPoint
      */
-    public void putPOI(String id, MapElement mapElement){
-        pointsOfInterest.put(id, mapElement);
+    public void putPOI(String id, MapPoint mapPoint){
+        pointsOfInterest.put(id, mapPoint);
     }
 
     /**
@@ -70,7 +70,8 @@ public class POIRegistry {
      * Returns an Iterable of all MapElements associated with a POI
      * @return
      */
-    public Iterable<MapElement> getLocations(){
+    public Iterable<MapPoint> getLocations(){
         return pointsOfInterest.values();
     }
+
 }
