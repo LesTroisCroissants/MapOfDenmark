@@ -139,6 +139,14 @@ public class Model implements ModelContact{
         storage.setDebug(debug);
     }
 
+    public void loadNewFile(String fileName) {
+        try {
+            open(fileName);
+        } catch (IOException | XMLStreamException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public MapPoint addressSearch(String address) {
         // When searching, should pan to MapElement / point on map if not in view.
