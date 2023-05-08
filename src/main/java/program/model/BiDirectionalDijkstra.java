@@ -5,6 +5,10 @@ import static program.model.Model.MOT.*;
 
 import java.util.*;
 
+/**
+ * Object that computes the shortest path between a source and a destination for a particular mode of transportation
+ */
+
 public class BiDirectionalDijkstra {
     private HashMap<Vertex, DirectedEdge> previousEdge;
     private PriorityQueue<Vertex> forwardPQ;
@@ -15,7 +19,7 @@ public class BiDirectionalDijkstra {
     private Vertex shortestForward;
     private Vertex shortestBackward;
     public float currentShortestPathLength;
-    private Deque<DirectedEdge> edgePath = new ArrayDeque<>();
+    private Deque<DirectedEdge> edgePath;
     private final Model.MOT modeOfTransport;
 
     public BiDirectionalDijkstra(Vertex source, Vertex destination, Model.MOT modeOfTransport){
@@ -35,6 +39,7 @@ public class BiDirectionalDijkstra {
         backwardPQ = new PriorityQueue<>();
         forwardMarked = new HashSet<>();
         backwardMarked = new HashSet<>();
+        edgePath = new ArrayDeque<>();
     }
 
     private void prepareCurrentShortestPathRelatedFields(){
@@ -58,10 +63,10 @@ public class BiDirectionalDijkstra {
             searchBackward();
         }
 
-        setEdgePath();
-
         // check if path has been found
         if (shortestForward == null) throw new IllegalArgumentException("No such path exists");
+
+        setEdgePath();
     }
 
     private void searchForward() {
@@ -87,7 +92,7 @@ public class BiDirectionalDijkstra {
 
             //Triggers if vertexFrom is in the opposite search-space
             if (forwardMarked.contains(directedEdge.fromVertex())){
-                // evaluatePath(directedEdge); // should not be necessary as we do not wish to evaluate all paths from both directions
+                // evaluatePath(directedEdge); // not necessary as we do not wish to evaluate all paths from both directions
             }
             else {
                 relaxBackward(directedEdge);
@@ -95,20 +100,24 @@ public class BiDirectionalDijkstra {
         }
     }
 
+    /**
+     * Returns a boolean indicating if an edge is incompatible with the mode of transportation
+     */
     private boolean skipEdge(DirectedEdge directedEdge){
         if(modeOfTransport == CAR){
-            if (!directedEdge.getMapRoadSegment().isCarAllowed()){
-                return true;
-            }
+            return !directedEdge.getMapRoadSegment().isCarAllowed();
         }
         if(modeOfTransport == BIKE || modeOfTransport == WALK){
-            if (directedEdge.getMapRoadSegment().isOnlyCarAllowed()){
-                return true;
-            }
+            return directedEdge.getMapRoadSegment().isOnlyCarAllowed();
         }
         return false;
     }
 
+    /**
+     * Evaluates the path between two end-points of an edge back to the source and destination.
+     * Sets the currentShortestPath if the presented candidate is a shorter suitor.
+     * @param directedEdge
+     */
     private void evaluatePath(DirectedEdge directedEdge) {
         Vertex fromVertex = directedEdge.fromVertex();
         Vertex toVertex = directedEdge.toVertex();
@@ -169,6 +178,10 @@ public class BiDirectionalDijkstra {
         }
     }
 
+    /**
+     * Returns true if it remains possible to potentially find a shorter path
+     * @return
+     */
     private boolean shorterPathPossible(){
         if (forwardPQ.isEmpty() || backwardPQ.isEmpty()) return false;
 
@@ -179,6 +192,10 @@ public class BiDirectionalDijkstra {
     }
 
 
+    /**
+     * Returns the edge common to the shortestForward and shortestBackward
+     * @return
+     */
     private DirectedEdge getBridge() {
         DirectedEdge bridge = shortestForward.outEdges.iterator().next();
         for (DirectedEdge edgeCandidate : shortestForward.outEdges)
@@ -189,15 +206,17 @@ public class BiDirectionalDijkstra {
         return bridge;
     }
 
-    public void setEdgePath(){
+    private void setEdgePath(){
         edgePath.push(getBridge());
 
+        //pushes all edges in the forward path
         DirectedEdge currentEdge = previousEdge.get(shortestForward);
         while (currentEdge != null){
             edgePath.push(currentEdge);
             currentEdge = previousEdge.getOrDefault(currentEdge.fromVertex(), null);
         }
 
+        //enqueues all edges in the backward path
         currentEdge = previousEdge.get(shortestBackward);
         while (currentEdge != null){
             edgePath.add(currentEdge);
@@ -205,6 +224,10 @@ public class BiDirectionalDijkstra {
         }
     }
 
+    /**
+     * Returns a list of all the MapRoadSegments of the found path
+     * @return
+     */
     public List<MapRoadSegment> getPath(){
         List<MapRoadSegment> segments = new ArrayList<>();
 
@@ -215,6 +238,10 @@ public class BiDirectionalDijkstra {
         return segments;
     }
 
+    /**
+     * Returns an Iterable<String> containing all instructions for the found path
+     * @return
+     */
     public Iterable<String> getInstructions(){
         ArrayList<String> instructions = new ArrayList<>();
 
@@ -245,7 +272,7 @@ public class BiDirectionalDijkstra {
         
 
         float angle = (float) Math.toDegrees(Math.acos(
-                dotProduct(comingFrom, goingTo) / (comingFrom.getMapRoadSegment().getDistance() * goingTo.getMapRoadSegment().getDistance())
+                AuxMath.dotProduct(comingFrom, goingTo) / (comingFrom.getMapRoadSegment().getDistance() * goingTo.getMapRoadSegment().getDistance())
         ));
 
         // if the angle is < 20 degrees: straight
@@ -260,30 +287,12 @@ public class BiDirectionalDijkstra {
             }
         }
 
-        float crossProduct = CrossProduct(comingFrom, goingTo);
+        float crossProduct = AuxMath.lengthOfCrossProductVector(comingFrom, goingTo);
 
         if (crossProduct > 0){
             return DIRECTION_LEFT;
         } else {
             return DIRECTION_RIGHT;
         }
-    }
-
-    private float CrossProduct(DirectedEdge comingFrom, DirectedEdge goingTo){
-        Vertex from = comingFrom.fromVertex();
-        Vertex intersection = comingFrom.toVertex();
-        Vertex to = goingTo.toVertex();
-
-        return (intersection.getX() - from.getX()) * (to.getY() - from.getY()) - (to.getX() - from.getX()) * (intersection.getY() - from.getY());
-    }
-    
-    private float dotProduct(DirectedEdge comingFrom, DirectedEdge goingTo){
-        float vectorAx = comingFrom.toVertex().getX() - comingFrom.fromVertex().getX();
-        float vectorAy = comingFrom.toVertex().getY() - comingFrom.fromVertex().getY();
-
-        float vectorBx = goingTo.toVertex().getX() - goingTo.fromVertex().getX();
-        float vectorBy = goingTo.toVertex().getY() - goingTo.fromVertex().getY();
-
-        return vectorAx * vectorBx + vectorAy * vectorBy;
     }
 }

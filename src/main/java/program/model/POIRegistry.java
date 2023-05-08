@@ -44,7 +44,8 @@ public class POIRegistry {
      * @param id
      */
     public void removePOI(String id){
-        pointsOfInterest.remove(id);
+        if (pointsOfInterest.containsKey(id)) pointsOfInterest.remove(id);
+        else throw new IllegalArgumentException("No point of interest of that name has been set");
     }
 
     /**
@@ -53,7 +54,7 @@ public class POIRegistry {
      * @return
      * @throws IllegalArgumentException
      */
-    public MapElement getPOI(String id) throws IllegalArgumentException{
+    public MapElement getPOI(String id) {
         if (pointsOfInterest.containsKey(id)) return pointsOfInterest.get(id);
         else throw new IllegalArgumentException("No point of interest of that name has been set");
     }
