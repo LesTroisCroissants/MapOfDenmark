@@ -145,6 +145,8 @@ public class Controller implements Initializable {
 
         graphicsContext.setTransform(trans);
 
+        zoomValue = (int) graphicsContext.getTransform().getMxx();
+
         for (MapElement e : model.getElementsToDraw()) {
             model.getTheme().prepareDraw(graphicsContext, e.getType(), trans.determinant());
             e.draw(graphicsContext);

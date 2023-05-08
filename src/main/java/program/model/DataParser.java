@@ -38,14 +38,14 @@ public class DataParser{
         parseOSM(input);
     }
 
-    private static void parseOSM(String fileName) throws FileNotFoundException, XMLStreamException {
+    private static void parseOSM(String fileName) throws FileNotFoundException, XMLStreamException, UnsupportedEncodingException {
         parseOSM(new FileInputStream(fileName));
     }
 
 
     private static List<Point> nodes;
-    private static void parseOSM(InputStream inputStream) throws XMLStreamException {
-        XMLStreamReader input = XMLInputFactory.newInstance().createXMLStreamReader(new InputStreamReader(inputStream));
+    private static void parseOSM(InputStream inputStream) throws XMLStreamException, UnsupportedEncodingException {
+        XMLStreamReader input = XMLInputFactory.newInstance().createXMLStreamReader(new InputStreamReader(inputStream, "UTF-8"));
 
         nodes = new ArrayList<>(15_000_000);
 
