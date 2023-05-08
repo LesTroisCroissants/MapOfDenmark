@@ -9,10 +9,10 @@ public class Address {
             final String postcode,
             final String city
     ) {
-        this.street = street;
-        this.house = house;
+        this.street = street.toLowerCase().intern();
+        this.house = house == null ? house : house.toLowerCase();
         this.postcode = postcode;
-        this.city = city;
+        this.city = city == null ? city : city.toLowerCase();
     }
 
     public String getStreet() {

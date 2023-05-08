@@ -40,7 +40,7 @@ public class CommandParser {
         switch (toExecute) {
                 //Points
             case "":
-                c.addressSearch(address);
+                c.addressSearch(address.toLowerCase());
                 break;
             case "!as":
                 if (address.equals("") || id.equals("")) throw new IllegalCommandException("Command !as takes both an address and an ID");
