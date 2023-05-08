@@ -22,9 +22,11 @@ public class View implements ViewContact {
     Stage helpPopup;
     Stage infoPopup;
     Stage directionsPopup;
+    Stage poiListPopup;
     boolean helpPopupOpen = false;
     boolean infoPopupOpen = false;
     boolean directionsPopupOpen = false;
+    boolean poiListPopupOpen = false;
 
     public static void instantiateView(Stage primaryStage) throws IOException {
         if (instance != null) throw new RuntimeException();
@@ -74,6 +76,7 @@ public class View implements ViewContact {
             if (helpPopup != null) helpPopup.close();
             if (infoPopup != null) infoPopup.close();
             if (directionsPopup != null) directionsPopup.close();
+            if (poiListPopup != null) poiListPopup.close();
         });
     }
 
@@ -100,6 +103,59 @@ public class View implements ViewContact {
             directionsPopup.show();
             directionsPopupOpen = true;
         }
+    }
+
+    public void showPOIListPopup(Iterable<String> POIList){
+        if (!poiListPopupOpen) {
+            createPOIListPopup(POIList);
+            poiListPopup.show();
+            poiListPopupOpen = true;
+        }
+    }
+
+    private void createPOIListPopup(Iterable<String> poiList){
+        TextArea textArea = new TextArea();
+        textArea.setEditable(false);
+        textArea.setWrapText(true);
+        textArea.setPrefHeight(400);
+        textArea.setPrefWidth(400);
+
+        boolean isEmpty = true;
+
+        for (String poi : poiList) {
+            isEmpty = false;
+            textArea.appendText(poi);
+            textArea.appendText(System.lineSeparator());
+        }
+
+        if (isEmpty) {
+            textArea.appendText("No POIs found");
+        }
+
+        ScrollPane scrollPane = new ScrollPane(textArea);
+        scrollPane.setPrefSize(400, 400);
+        scrollPane.setFitToWidth(true);
+
+        Scene scene = new Scene(scrollPane);
+
+        poiListPopup = new Stage();
+        poiListPopup.setScene(scene);
+
+        // set height and width
+        poiListPopup.setResizable(false);
+        poiListPopup.setWidth(400);
+        poiListPopup.setHeight(400);
+        poiListPopup.initModality(Modality.NONE);
+
+        poiListPopup.setOnHidden(event -> {
+            poiListPopupOpen = false;
+            poiListPopup.close();
+        });
+        poiListPopup.addEventHandler(KeyEvent.KEY_RELEASED, (KeyEvent event) -> {
+            if (KeyCode.Q == event.getCode() || KeyCode.ESCAPE == event.getCode()) {
+                poiListPopup.close();
+            }
+        });
     }
 
     private void createDirectionsPopup(Iterable<String> directions){
