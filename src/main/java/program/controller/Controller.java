@@ -271,6 +271,11 @@ public class Controller implements Initializable {
     }
 
     void zoom(double dx, double dy, double factor) {
+        double newMxx = trans.getMxx() * factor;
+        if (newMxx < 1_000 || newMxx > 1_050_000) {
+            return;
+        }
+
         pan(-dx, -dy);
         trans.prependScale(factor, factor);
         pan(dx, dy);

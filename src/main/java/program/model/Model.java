@@ -33,7 +33,7 @@ public class Model implements ModelContact{
         addressBook = AddressBook.getInstance();
         edges = new ArrayList<>();
 
-        String toOpen = "C:\\Users\\Apple\\Desktop\\Programming\\BFST23Group12\\src\\main\\java\\program\\denmark-latest.zip.obj";
+        String toOpen = "/Users/philip/Library/CloudStorage/OneDrive-ITU/uni/Semester 2/FYPMO/BFST23Group12/src/main/nyborg.zip";
         open(toOpen);
 
         poiRegistry = POIRegistry.getInstance();
