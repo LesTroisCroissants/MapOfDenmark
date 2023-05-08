@@ -14,9 +14,12 @@ public interface ModelContact {
     public void planRoute(MapPoint from, MapPoint to);
     public List<MapRoadSegment> getPlannedRoute();
     public Iterable<String> getInstructions();
+    Iterable<String> getPOIs();
     public MapElement nearestNeighbor (MapPoint q);
     public void setPOI(String id, String address);
     public void setPOI(String id, float lat, float lon);
+
+
     public void setTheme(String theme);
     public Theme getTheme();
     public void setModeOfTransportation(MOT modeOfTransportation);

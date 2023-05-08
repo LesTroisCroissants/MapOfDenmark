@@ -33,7 +33,7 @@ public class Model implements ModelContact{
         addressBook = AddressBook.getInstance();
         edges = new ArrayList<>();
 
-        String toOpen = "/Users/philip/Library/CloudStorage/OneDrive-ITU/uni/Semester 2/FYPMO/BFST23Group12/src/main/nyborg.zip";
+        String toOpen = "/Users/philip/Library/CloudStorage/OneDrive-ITU/uni/Semester 2/FYPMO/MapOfDenmark/src/main/denmark-latest.osm.zip.obj";
         open(toOpen);
 
         poiRegistry = POIRegistry.getInstance();
@@ -67,7 +67,7 @@ public class Model implements ModelContact{
             storage = DataParser.parse(fileName, addressBook, edges);
             File objfile = new File(fileName + ".obj");
             if(!objfile.exists()){
-                save(fileName + ".obj");
+                 save(fileName + ".obj"); //TODO this comment makes the program not save to obj
                 edges.clear();
             }
         }
@@ -92,7 +92,7 @@ public class Model implements ModelContact{
 
         plannedRoute = bididi.getPath();
         instructions = bididi.getInstructions();
-        System.out.println((System.nanoTime()-startTime) / 1_000_000);
+        System.out.println("route planning time: " + (System.nanoTime()-startTime) / 1_000_000);
 
         for (String s : bididi.getInstructions()) {
             System.out.println(s);
@@ -170,6 +170,11 @@ public class Model implements ModelContact{
     public void setPOI(String id, float lat, float lon) {
         // Can keep nearest neighbor on save
         poiRegistry.putPOI(id, lat, lon);
+    }
+
+    @Override
+    public Iterable<String> getPOIs() {
+        return poiRegistry.getIds();
     }
 
     @Override

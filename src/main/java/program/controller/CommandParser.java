@@ -55,7 +55,7 @@ public class CommandParser {
                 break;
             case "!instructions":
             case "!i":
-                if (!address.equals("") || !id.equals("")) throw new IllegalCommandException("Command -i does not take any arguments");
+                if (!address.equals("") || !id.equals("")) throw new IllegalCommandException("Command !i does not take any arguments");
                 else c.displayInstructions();
             case "!f":
             case "!from":

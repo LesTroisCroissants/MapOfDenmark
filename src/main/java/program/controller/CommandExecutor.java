@@ -52,7 +52,7 @@ public class CommandExecutor {
     //Display-related methods
 
     public void displayPOIs(){
-        //TODO write code
+        controller.showPOIListPopup(model.getPOIs());
     }
 
     public void displayProgramInformation(){

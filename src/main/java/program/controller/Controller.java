@@ -227,6 +227,10 @@ public class Controller implements Initializable {
         view.showDirectionsPopup(instructions);
     }
 
+    public void showPOIListPopup(Iterable<String> POIList) {
+        view.showPOIListPopup(POIList);
+    }
+
 
     private void updateCanvasBounds() {
         Bounds bounds = canvas.getBoundsInLocal();
@@ -273,8 +277,9 @@ public class Controller implements Initializable {
     }
 
     private void zoom(double dx, double dy, double factor) {
+        int MAX_ZOOM_LEVEL = 1_050_000;
         double newMxx = trans.getMxx() * factor;
-        if (newMxx < 500 || newMxx > 1_050_000) {
+        if ((newMxx < (canvas.getHeight() / (model.getMaxLat() - model.getMinLat())) || newMxx > MAX_ZOOM_LEVEL)) {
             return;
         }
 
