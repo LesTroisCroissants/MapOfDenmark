@@ -247,7 +247,7 @@ public class Controller implements Initializable {
     private void focusElement(MapPoint element, boolean clean) {
         if (clean) focusedElements.clear();
         focusedElements.add(element);
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 2; i++) { // we assume that we have to do this twice because of JavaFX funkiness
             trans = new Affine();
             var screenCenterX = (localBoundMax.getX() - localBoundMin.getX())/2;
             var screenCenterY = (localBoundMax.getY() - localBoundMin.getY())/2;
@@ -274,7 +274,7 @@ public class Controller implements Initializable {
 
     private void zoom(double dx, double dy, double factor) {
         double newMxx = trans.getMxx() * factor;
-        if (newMxx < 1_000 || newMxx > 1_050_000) {
+        if (newMxx < 500 || newMxx > 1_050_000) {
             return;
         }
 

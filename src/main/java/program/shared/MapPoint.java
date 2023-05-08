@@ -31,7 +31,8 @@ public class MapPoint extends MapElement {
 
     @Override
     public void draw(GraphicsContext context) {
-        context.fillOval(point[0], -point[1], 0.00025, 0.00025);
+        double size = 10 / Math.sqrt(context.getTransform().determinant());
+        context.fillOval(point[0], -point[1], size, size);
     }
 
     @Override
