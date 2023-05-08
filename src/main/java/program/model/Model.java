@@ -110,7 +110,7 @@ public class Model implements ModelContact{
     }
 
     public void clearRoute() {
-        getPlannedRoute().clear();
+        if (plannedRoute != null) plannedRoute.clear();
     }
 
     @Override
