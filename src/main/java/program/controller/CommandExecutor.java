@@ -25,6 +25,7 @@ public class CommandExecutor {
     }
 
     public void addressSearch(String address){
+        quitSelection();
         MapPoint mapPoint = model.checkPOIRegistry(address);
         if (mapPoint == null) {
             mapPoint = model.addressSearch(address);
