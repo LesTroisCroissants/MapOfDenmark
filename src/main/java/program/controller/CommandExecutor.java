@@ -41,8 +41,7 @@ public class CommandExecutor {
         }
         else model.planRoute(me, selectedElement);
         controller.draw();
-        controller.focusElement(model.getMiddlePoint());
-        controller.setZoomLevel(0);
+        controller.panTo(model.getMiddlePoint(), 2);
     }
 
     private void selectElement(MapPoint element){
