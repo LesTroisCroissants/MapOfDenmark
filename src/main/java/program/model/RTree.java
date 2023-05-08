@@ -4,7 +4,6 @@ import javafx.util.Pair;
 import program.shared.*;
 
 import java.io.Serializable;
-import java.nio.file.Path;
 import java.util.*;
 
 public class RTree implements Serializable {
@@ -113,7 +112,7 @@ public class RTree implements Serializable {
                     MapElement element = elementInfo.node;
                     //if (elementInfo.minDist > nnDist) continue;
 
-                    float distToLine = RTreeMath.pointToRoadDistance(q, (MapRoadSegment) element);
+                    float distToLine = AuxMath.pointToRoadDistance(q, (MapRoadSegment) element);
                     if (distToLine < nnDist) {
                         nearestNeighbor = element;
                         nnDist = distToLine;

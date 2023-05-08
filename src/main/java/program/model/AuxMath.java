@@ -3,7 +3,7 @@ package program.model;
 import program.shared.MapRoadSegment;
 import program.shared.Point;
 
-public class RTreeMath {
+public class AuxMath {
     public static float pointToRoadDistance(float[] p, MapRoadSegment road) {
         /*float lineSlope = getSlope(road.getVertexA(), road.getVertexB());
         float lineIntercept = getLineIntercept(road.getVertexA(), lineSlope);
@@ -46,5 +46,23 @@ public class RTreeMath {
         var dx = p[0] - xx;
         var dy = p[1] - yy;
         return (float) Math.sqrt(dx * dx + dy * dy);
+    }
+
+    public static float dotProduct(DirectedEdge comingFrom, DirectedEdge goingTo){
+        float vectorAx = comingFrom.toVertex().getX() - comingFrom.fromVertex().getX();
+        float vectorAy = comingFrom.toVertex().getY() - comingFrom.fromVertex().getY();
+
+        float vectorBx = goingTo.toVertex().getX() - goingTo.fromVertex().getX();
+        float vectorBy = goingTo.toVertex().getY() - goingTo.fromVertex().getY();
+
+        return vectorAx * vectorBx + vectorAy * vectorBy;
+    }
+
+    public static float lengthOfCrossProductVector(DirectedEdge comingFrom, DirectedEdge goingTo){
+        Vertex from = comingFrom.fromVertex();
+        Vertex intersection = comingFrom.toVertex();
+        Vertex to = goingTo.toVertex();
+
+        return (intersection.getX() - from.getX()) * (to.getY() - from.getY()) - (to.getX() - from.getX()) * (intersection.getY() - from.getY());
     }
 }

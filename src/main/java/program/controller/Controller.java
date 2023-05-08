@@ -52,10 +52,12 @@ public class Controller implements Initializable {
     @FXML
     public GridPane gridpane;
 
+
     GraphicsContext graphicsContext;
 
     private Affine trans;
 
+    //Used to indicate minimum bounding rectangle for R-tree queries
     private float[] drawingBoundMin;
     private float[] drawingBoundMax;
 

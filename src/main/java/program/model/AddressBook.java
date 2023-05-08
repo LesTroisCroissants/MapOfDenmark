@@ -9,31 +9,61 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Contains all addresses in a ternary search trie and permits retrieval of their corresponding MapPoints
+ */
+
 public class AddressBook implements Serializable {
     private static AddressBook addressBook = null;
     private Trie tst;
 
-    private AddressBook(){
-        tst = new Trie();
-    }
+    /**
+     * Returns the singleton instance of the address book
+     * @return
+     */
 
     public static AddressBook getInstance() {
         if (addressBook == null) addressBook = new AddressBook();
         return addressBook;
     }
 
+    private AddressBook(){
+        tst = new Trie();
+    }
+
+    /**
+     * Sets the current instance of the address book; used for opening with .obj files
+     * @param _addressBook
+     */
     public static void setInstance(AddressBook _addressBook) {
         addressBook = _addressBook;
     }
 
-    public void addAddress(Address address, Point location) { //should only be used when initializing the map
+    /**
+     * Adds an address to the address book
+     * @param address
+     * @param location
+     */
+    public void addAddress(Address address, Point location) {
         tst.put(address, location);
     }
 
+    /**
+     * Takes an address object and returns associated MapPoint
+     * @param address
+     * @return
+     */
     public MapPoint addressSearch(Address address) {
         Point point = tst.get(address);
         if (point == null) throw new AddressParser.InvalidAddressException("Invalid address", address.toString());
         return new MapPoint(point, "address");
+    }
+
+    /**
+     * Removes all addresses from the address book; should only be used when changing file
+     */
+    public void clear(){
+        tst = new Trie();
     }
 }
 

@@ -16,16 +16,24 @@ import program.App;
 
 import java.io.IOException;
 
+/**
+ * Responsible for loading fxml and managing pop-ups
+ */
+
 public class View implements ViewContact {
     private static ViewContact instance;
+    private Stage helpPopup;
+    private Stage infoPopup;
+    private Stage directionsPopup;
+    private boolean helpPopupOpen = false;
+    private boolean infoPopupOpen = false;
+    private boolean directionsPopupOpen = false;
 
-    Stage helpPopup;
-    Stage infoPopup;
-    Stage directionsPopup;
-    boolean helpPopupOpen = false;
-    boolean infoPopupOpen = false;
-    boolean directionsPopupOpen = false;
-
+    /**
+     * Instantiates the view or throws an exception if it has already been instantiated
+     * @param primaryStage
+     * @throws IOException
+     */
     public static void instantiateView(Stage primaryStage) throws IOException {
         if (instance != null) throw new RuntimeException();
         else new View(primaryStage);
@@ -37,11 +45,22 @@ public class View implements ViewContact {
         configureStage(primaryStage, scene);
     }
 
+    /**
+     * Returns the singleton instance of View
+     * @return
+     */
     public static ViewContact getInstance(){
         if (instance == null) throw new RuntimeException();
         return instance;
     }
 
+    /**
+     * Loads the fxml from a given path and returns a scene based off the GridPane root of the fxml file.
+     * Binds the window size between the GridPane and Scene
+     * @param fxmlPath
+     * @return
+     * @throws IOException
+     */
     private Scene loadFXML(String fxmlPath) throws IOException {
         //FXMLLoader also creates controller
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxmlPath));
@@ -56,6 +75,11 @@ public class View implements ViewContact {
         root.prefHeightProperty().bind(scene.heightProperty());
     }
 
+    /**
+     * Configures the stage by setting dimensions and listeners and showing it.
+     * @param primaryStage
+     * @param scene
+     */
     private void configureStage(Stage primaryStage, Scene scene){
         setStageDimensions(primaryStage, 300, 300);
         setStageListeners(primaryStage);
@@ -83,6 +107,8 @@ public class View implements ViewContact {
             createHelpPopup();
             helpPopup.show();
             helpPopupOpen = true;
+        } else {
+            throw new IllegalArgumentException("Help pop-up is already open");
         }
     }
 
@@ -91,6 +117,8 @@ public class View implements ViewContact {
             createInfoPopup();
             infoPopup.show();
             infoPopupOpen = true;
+        } else {
+            throw new IllegalArgumentException("Info pop-up is already open");
         }
     }
 
@@ -99,6 +127,8 @@ public class View implements ViewContact {
             createDirectionsPopup(directions);
             directionsPopup.show();
             directionsPopupOpen = true;
+        } else {
+            throw new IllegalArgumentException("Directions pop-up is already open");
         }
     }
 

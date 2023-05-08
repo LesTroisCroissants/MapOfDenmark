@@ -37,6 +37,6 @@ public class MapPoint extends MapElement {
 
     @Override
     public String toString() {
-        return this.point[0] + "" + this.point[1];
+        return this.point[0] + " " + this.point[1];
     }
 }

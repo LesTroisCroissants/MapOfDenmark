@@ -7,9 +7,9 @@ import java.util.List;
 import java.io.*;
 
 public class Vertex extends Point implements Comparable<Vertex>, Serializable {
-    transient List<DirectedEdge> outEdges;
-    transient List<DirectedEdge> inEdges;
-    transient float distTo;
+    transient List<DirectedEdge> outEdges; //all edges with this as their fromVertex
+    transient List<DirectedEdge> inEdges; //all edges with this as their toVertex
+     transient float distTo; //used for pathfinding
 
     public Vertex(float x, float y, long id) {
         super(x, y, id);
@@ -37,6 +37,11 @@ public class Vertex extends Point implements Comparable<Vertex>, Serializable {
         return getX() + " " + getY();
     }
 
+    /**
+     * Compares the distance to the two vertices; used during pathfinding
+     * @param other the object to be compared.
+     * @return
+     */
     @Override
     public int compareTo(Vertex other){
         return Float.compare(distTo, other.distTo);

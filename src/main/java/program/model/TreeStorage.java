@@ -94,7 +94,7 @@ public class TreeStorage implements Serializable {
             NodeDistanceInfo<MapRoadSegment> curr = nearestNodes.poll();
             if (curr.minDist > nnDist) continue;
 
-            float distToLine = RTreeMath.pointToRoadDistance(q.getMinPoint(), curr.node);
+            float distToLine = AuxMath.pointToRoadDistance(q.getMinPoint(), curr.node);
             if (distToLine < nnDist) {
                 //nn = curr; Seperately we need to find closest vertex in final element
                 nnRoad = curr.node;

@@ -1,94 +1,127 @@
 package program.model;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import program.shared.MapElement;
 import program.shared.MapPoint;
+import program.shared.Point;
+
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class POIRegistryTest {/*
+class POIRegistryTest {
     POIRegistry poi;
-    @BeforeEach
-    void setUp() {
-        poi = POIRegistry.getInstance();
-    }
+    String[] ids = {"Lasagne", "Lagkage","Legomand","Loppegift", "Æble"};
+
+
     @Test
     void putPOIMapElement() {
-        String id = "Lasagne";
-        MapPoint point = new MapPoint(55.6781590F, 12.5817710F);
+        String id = "Work";
+        MapPoint point = new MapPoint(new Point(-1,-1), "");
         poi.putPOI(id,point);
-        MapElement pointtest = poi.getPOI(id);
-        assertEquals(pointtest.toString(),point.toString());
+
+        assertEquals(poi.getPOI("Work").toString(),point.toString());
     }
 
     @Test
-    void PutPOI() {
-        String id = "Lagkage";
-        MapPoint point = new MapPoint(55.6629030F, 12.6147960F);
-        poi.putPOI(id,55.6629030F, 12.6147960F);
-        MapElement pointtest = poi.getPOI(id);
-        assertEquals(pointtest.toString(),point.toString());
+    void PutPOIFromCoordinates() {
+        String id = "Work";
+        MapPoint point = new MapPoint(new Point(-1,-1), "");
+        poi.putPOI(id,-1, -1);
+
+        assertEquals(poi.getPOI("Work").toString(),point.toString());
     }
 
     @Test
     void removePOI() {
-        String id = "Legomand";
-        MapPoint point = new MapPoint(55.6674600F, 12.5919800F);
-        poi.putPOI(id,point);
+        String id = ids[0];
         poi.removePOI(id);
-        for(String i : poi.getIds()){
-            assert !i.equals(id);
-        }
+        for (String s : poi.getIds())
+            if (s.equals(id))
+                fail();
+
         assert(true);
     }
     @Test
     void removeInvalidPOI() {
-        poi.removePOI("lol");
-        assert(true);
+        try {
+            poi.removePOI("Smertestillende");
+            fail();
+        } catch (IllegalArgumentException e){
+            assertEquals(e.getMessage(),"No point of interest of that name has been set");
+        }
     }
 
     @Test
      void getInvalidPOI() {
         try{
-            MapElement element = poi.getPOI("Loppegift");
+            MapElement element = poi.getPOI("Smertestillende");
+            fail();
         }catch(IllegalArgumentException e){
             assertEquals(e.getMessage(),"No point of interest of that name has been set");
         }
     }
 
     @Test
-    void getIds() {
-        int count = 0;
-        String[] ids = {"Lasagne", "Lagkage","Legomand","Loppegift"};
-        MapPoint[] points = {new MapPoint(55.6781590F, 12.5817710F),new MapPoint(55.6629030F, 12.6147960F),new MapPoint(55.6674600F, 12.5919800F), new MapPoint(55.3874600F, 12.5215100F)};
-        for(int i = 0; i < ids.length; i++){
-            poi.putPOI(ids[i],points[i]);
+    void connectionBetweenIdAndLocationTest(){
+        for (int i = 0; i < ids.length; i++){
+            assertEquals(i, poi.getPOI(ids[i]).getMaxPoint()[0]);
         }
-        Iterable<String> keys = poi.getIds();
-        for(int i = 0; i < ids.length;i++){
-            for(Object id: keys){
-                if(ids[i].equals(id)) count++;
-            }
-        }
-        assertEquals(count,4);
     }
 
+    /**
+     * Tests that all ids returned are different
+     */
     @Test
-    void getLocations() {
-        int count = 0;
-        String[] ids = {"Lasagne", "Lagkage","Legomand","Loppegift"};
-        MapPoint[] points = {new MapPoint(55.6781590F, 12.5817710F),new MapPoint(55.6629030F, 12.6147960F),new MapPoint(55.6674600F, 12.5919800F), new MapPoint(55.3874600F, 12.5215100F)};
-        for(int i = 0; i < ids.length; i++){
-            poi.putPOI(ids[i],points[i]);
+    void getIds() {
+        Set<String> idSet = new HashSet<>();
+
+        for (String s : poi.getIds()) {
+            if (idSet.contains(s)) fail();
+            else idSet.add(s);
         }
-        Iterable<MapElement> values = poi.getLocations();
-        for(int i = 0; i < ids.length;i++){
-            for(Object value : values){
-                if(points[i].toString().equals(value.toString())) count++;
-            }
-        }
-        assertEquals(count,4);
+
+        assertTrue(true);
     }
-*/
+
+
+    /**
+     * Tests that all locations returned are different
+     */
+    @Test
+    void getLocationsTest() {
+        Set<MapElement> mapElements = new HashSet<>();
+
+        for (MapElement mapElement : poi.getLocations()){
+            if (mapElements.contains(mapElement)) fail();
+            else mapElements.add(mapElement);
+        }
+
+        assertTrue(true);
+    }
+
+    //Test for MapPointCreation
+
+    @BeforeEach
+    void setUp() {
+        poi = POIRegistry.getInstance();
+
+        for (int i = 0; i < ids.length; i++)
+            poi.putPOI(ids[i],i,i);
+    }
+
+    @AfterEach
+    void tearDown(){ //Two loops to avoid exception
+        Set<String> ids = new HashSet<>();
+
+        for (String s : poi.getIds())
+            ids.add(s);
+
+        for (String s : ids){
+            poi.removePOI(s);
+        }
+    }
 }

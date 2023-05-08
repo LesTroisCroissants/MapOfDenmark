@@ -5,10 +5,10 @@ import program.shared.MapRoadSegment;
 import java.io.Serializable;
 
 public class DirectedEdge implements Serializable {
-    private Vertex vertexFrom;
-    private Vertex vertexTo;
+    private final Vertex vertexFrom;
+    private final Vertex vertexTo;
     private final float carWeight;
-    private MapRoadSegment mapRoadSegment;
+    private final MapRoadSegment mapRoadSegment;
 
     public DirectedEdge(Vertex vertexFrom, Vertex vertexTo, float carWeight, MapRoadSegment representedRoadSegment) {
         this.vertexFrom = vertexFrom;
@@ -19,24 +19,21 @@ public class DirectedEdge implements Serializable {
     }
 
     /**
-     * Returns the tail vertex of the directed edge.
-     * @return the tail vertex of the directed edge
+     * Returns the from vertex of the directed edge
      */
     public Vertex fromVertex() {
         return vertexFrom;
     }
 
     /**
-     * Returns the head vertex of the directed edge.
-     * @return the head vertex of the directed edge
+     * Returns the to vertex of the directed edge
      */
     public Vertex toVertex() {
         return vertexTo;
     }
 
     /**
-     * Returns the weight of the directed edge.
-     * @return the weight of the directed edge
+     * Returns the weight of the directed edge
      */
     public float weight(Model.MOT modeOfTransport) {
         return switch (modeOfTransport) {
@@ -50,8 +47,7 @@ public class DirectedEdge implements Serializable {
     }
 
     /**
-     * Returns a string representation of the directed edge.
-     * @return a string representation of the directed edge
+     * Returns a string representation of the directed edge
      */
     public String toString() {
         return vertexFrom.toString() + "->" + vertexTo.toString() + " " + String.format("%5.2f", mapRoadSegment.getDistance());
