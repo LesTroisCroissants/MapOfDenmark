@@ -35,19 +35,14 @@ public class CommandExecutor {
     public void planRoute(String address, boolean to) throws CommandParser.IllegalCommandException {
         if (selectedElement == null) throw new CommandParser.IllegalCommandException("Cannot find path to " + address + " with no start destination.");
         MapPoint me = model.addressSearch(address);
-        MapPoint middlePoint = calculateMiddlePoint(selectedElement.getMaxPoint(), me.getMaxPoint());
 
         if (to){
             model.planRoute(selectedElement, me);
         }
         else model.planRoute(me, selectedElement);
         controller.draw();
-        controller.focusElement(middlePoint);
+        controller.focusElement(model.getMiddlePoint());
         controller.setZoomLevel(0);
-    }
-
-    public MapPoint calculateMiddlePoint(float[] from, float[] to){
-        return new MapPoint((to[0] - from[0])/2 + from[0],  (to[1] - from[1])/2 + from[1], "");
     }
 
     private void selectElement(MapPoint element){

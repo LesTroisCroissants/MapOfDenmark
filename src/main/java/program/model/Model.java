@@ -21,6 +21,8 @@ public class Model implements ModelContact{
     private List<MapRoadSegment> plannedRoute;
     private Iterable<String> instructions;
 
+    private MapPoint middlePoint;
+
 
     public enum MOT{
         CAR,
@@ -97,8 +99,16 @@ public class Model implements ModelContact{
         for (String s : bididi.getInstructions()) {
             System.out.println(s);
         }
+        setMiddlePoint(calculateMiddlePoint(from.getMaxPoint(),to.getMaxPoint()));
     }
 
+    private void setMiddlePoint(MapPoint middlePoint) {
+        this.middlePoint = middlePoint;
+    }
+
+    public MapPoint getMiddlePoint() {
+        return middlePoint;
+    }
 
     @Override
     public List<MapRoadSegment> getPlannedRoute() {
@@ -146,6 +156,10 @@ public class Model implements ModelContact{
         } catch (IOException | XMLStreamException | ClassNotFoundException e) {
             e.printStackTrace();
         }
+    }
+
+    public MapPoint calculateMiddlePoint(float[] from, float[] to){
+        return new MapPoint((to[0] - from[0])/2 + from[0],  (to[1] - from[1])/2 + from[1], "");
     }
 
     @Override
