@@ -1,5 +1,6 @@
 package program.model;
 
+import javafx.geometry.Point2D;
 import program.shared.*;
 import program.view.Theme;
 
@@ -33,7 +34,7 @@ public class Model implements ModelContact{
         addressBook = AddressBook.getInstance();
         edges = new ArrayList<>();
 
-        String toOpen = "/Users/philip/Library/CloudStorage/OneDrive-ITU/uni/Semester 2/FYPMO/MapOfDenmark/src/main/denmark-latest.osm.zip.obj";
+        String toOpen = "src/main/data/fyn.osm.zip.obj";
         open(toOpen);
 
         poiRegistry = POIRegistry.getInstance();
@@ -89,7 +90,6 @@ public class Model implements ModelContact{
         Vertex start = storage.nearestVertex(from);
         Vertex end = storage.nearestVertex(to);
         BiDirectionalDijkstra bididi = new BiDirectionalDijkstra(start, end, modeOfTransport);
-
         plannedRoute = bididi.getPath();
         instructions = bididi.getInstructions();
         System.out.println("route planning time: " + (System.nanoTime()-startTime) / 1_000_000);
@@ -98,6 +98,7 @@ public class Model implements ModelContact{
             System.out.println(s);
         }
     }
+
 
     @Override
     public List<MapRoadSegment> getPlannedRoute() {
