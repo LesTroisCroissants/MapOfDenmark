@@ -31,8 +31,7 @@ public class MapPoint extends MapElement {
 
     @Override
     public void draw(GraphicsContext context) {
-        context.setStroke(Color.BLUE);
-        context.strokeOval(point[0], -point[1], 0.00025, 0.00025);
+        context.fillOval(point[0], -point[1], 0.00025, 0.00025);
     }
 
     @Override

@@ -165,10 +165,12 @@ public class Controller implements Initializable {
             try {
                 commandExecutor.executeCommand(textField.getCharacters().toString());
                 errorLabel.setText("Command accepted");
-            } catch (CommandParser.IllegalCommandException ice) {
+            } catch (CommandParser.IllegalCommandException | IllegalArgumentException ice) {
                 errorLabel.setText(ice.getMessage());
-            } catch (NullPointerException npe){
+            } /*catch (NullPointerException npe){
                 errorLabel.setText("No directions");
+            }*/ catch (Exception e) {
+                errorLabel.setText(e.getMessage());
             }
             textField.setText("");
         }
@@ -195,16 +197,17 @@ public class Controller implements Initializable {
             e.draw(graphicsContext);
         }
 
-        if (model.getPlannedRoute() != null) for (MapElement e : model.getPlannedRoute()) {
-            e.draw(graphicsContext);
+        model.getTheme().prepareDraw(graphicsContext, "highlighted", trans.determinant());
+        if (model.getPlannedRoute() != null) {
+            for (MapElement e : model.getPlannedRoute()) {
+                e.draw(graphicsContext);
+            }
         }
 
-        graphicsContext.setStroke(Color.RED);
         for (MapElement e : focusedElements) {
             e.draw(graphicsContext);
         }
 
-        graphicsContext.setStroke(Color.RED);
         /*graphicsContext.strokeRect(localBoundMin.getX(), localBoundMin.getY(),
                 localBoundMax.getX()-localBoundMin.getX(),
                 localBoundMax.getY()-localBoundMin.getY());*/
@@ -225,7 +228,7 @@ public class Controller implements Initializable {
     }
 
 
-    void updateCanvasBounds() {
+    private void updateCanvasBounds() {
         Bounds bounds = canvas.getBoundsInLocal();
 
         try {
@@ -241,8 +244,7 @@ public class Controller implements Initializable {
         }
     }
 
-    void focusElement(MapPoint element, boolean clean) {
-        focusedElements.add(model.nearestNeighbor(element));
+    private void focusElement(MapPoint element, boolean clean) {
         if (clean) focusedElements.clear();
         focusedElements.add(element);
         for (int i = 0; i < 2; i++) {
@@ -255,22 +257,22 @@ public class Controller implements Initializable {
         }
     }
 
-    void focusElement(MapPoint element) {
+    public void focusElement(MapPoint element) {
         focusElement(element, false);
     }
 
-    void pan(double dx, double dy, boolean draw) {
+    private void pan(double dx, double dy, boolean draw) {
         pan(dx, dy);
         if (draw) draw();
     }
 
-    void pan(double dx, double dy) {
+    private void pan(double dx, double dy) {
         trans.prependTranslation(dx, dy);
         // canvas bounds
         updateCanvasBounds();
     }
 
-    void zoom(double dx, double dy, double factor) {
+    private void zoom(double dx, double dy, double factor) {
         double newMxx = trans.getMxx() * factor;
         if (newMxx < 1_000 || newMxx > 1_050_000) {
             return;

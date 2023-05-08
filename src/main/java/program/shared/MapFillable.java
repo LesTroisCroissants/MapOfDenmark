@@ -32,7 +32,6 @@ public class MapFillable extends MapElement {
 
     @Override
     public void draw(GraphicsContext context) {
-        if (this.getType().equals("building"))context.setFill(Color.LIGHTGRAY);
         context.moveTo(points[0], -points[1]);
         context.beginPath();
         for (int i = 2; i < points.length; i += 2){

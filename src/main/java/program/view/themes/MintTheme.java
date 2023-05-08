@@ -11,6 +11,7 @@ public class MintTheme extends Theme {
                 Color.web("#689689"), //tertiary
                 Color.web("504136"), //land
                 Color.web("#A49E8D"), //buildings
-                Color.web("#B2E6D4")); //other
+                Color.web("#B2E6D4"), //other
+                Color.RED);                     //highlighted
     }
 }
