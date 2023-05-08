@@ -59,7 +59,7 @@ public class View implements ViewContact {
     }
 
     private void configureStage(Stage primaryStage, Scene scene){
-        setStageDimensions(primaryStage, 300, 300);
+        setStageDimensions(primaryStage, 500, 500);
         setStageListeners(primaryStage);
         primaryStage.setScene(scene);
         primaryStage.show();

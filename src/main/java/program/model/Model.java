@@ -33,7 +33,7 @@ public class Model implements ModelContact{
         addressBook = AddressBook.getInstance();
         edges = new ArrayList<>();
 
-        String toOpen = "/Users/philip/Library/CloudStorage/OneDrive-ITU/uni/Semester 2/FYPMO/MapOfDenmark/src/main/denmark-latest.osm.zip.obj";
+        String toOpen = "/home/apple/Documents/ITU/Semester2/FYPMD/MapOfDenmark/bornholm.zip";
         open(toOpen);
 
         poiRegistry = POIRegistry.getInstance();
@@ -67,7 +67,7 @@ public class Model implements ModelContact{
             storage = DataParser.parse(fileName, addressBook, edges);
             File objfile = new File(fileName + ".obj");
             if(!objfile.exists()){
-                 save(fileName + ".obj"); //TODO this comment makes the program not save to obj
+                save(fileName + ".obj");
                 edges.clear();
             }
         }

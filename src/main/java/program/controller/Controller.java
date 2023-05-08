@@ -16,7 +16,6 @@ import program.model.Model;
 import program.model.ModelContact;
 import program.shared.MapElement;
 import program.shared.MapPoint;
-import program.shared.MapRoadSegment;
 import program.view.View;
 import program.view.ViewContact;
 
@@ -33,6 +32,7 @@ public class Controller implements Initializable {
     private ViewContact view;
     private ModelContact model;
     private CommandExecutor commandExecutor;
+    private MapEventHandler mapEventHandler;
 
 
     @FXML
@@ -40,6 +40,9 @@ public class Controller implements Initializable {
 
     @FXML
     private Label errorLabel;
+
+    @FXML
+    private Label nearestRoad;
 
     @FXML
     public Canvas canvas;
@@ -54,22 +57,16 @@ public class Controller implements Initializable {
 
     private Affine trans;
 
-    private float[] drawingBoundMin;
-    private float[] drawingBoundMax;
-
     private Point2D localBoundMin;
     private Point2D localBoundMax;
 
     private List<MapElement> focusedElements;
-    private int zoom;
+    private int zoomValue;
 
     public static Controller getInstance(){
         if (instance == null) throw new RuntimeException();
         return instance;
     }
-
-    double lastX;
-    double lastY;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -79,7 +76,7 @@ public class Controller implements Initializable {
         initializeGridpane();
         trans = new Affine();
 
-        zoom = 0;
+        zoomValue = 0;
         focusedElements = new ArrayList<>();
 
         // Handle Exceptions some day lol
@@ -89,56 +86,13 @@ public class Controller implements Initializable {
             throw new RuntimeException(e);
         }
         commandExecutor = new CommandExecutor(model);
+        mapEventHandler = new MapEventHandler(this, model);
 
-        pan(-0.56*model.getMinLon(), model.getMaxLat());
-        zoom(0, 0, canvas.getHeight() / (model.getMaxLat() - model.getMinLat()));
-
-        /*canvas.setOnMouseMoved(e -> {
-            lastX = e.getX();
-            lastY = e.getY();
-            Point2D mousePos = null;
-            try {
-                mousePos = trans.inverseTransform(lastX, lastY);
-            } catch (NonInvertibleTransformException ex) {
-                throw new RuntimeException(ex);
-            }
-            MapRoadSegment nearestRoad = (MapRoadSegment)
-                    model.nearestNeighbor(new MapPoint((float) mousePos.getX(), (float) -mousePos.getY(), ""));
-
-        });*/
-
-        canvas.setOnMousePressed(e -> {
-            lastX = e.getX();
-            lastY = e.getY();
-
-            try {
-                // Use this to find the nearest road
-                Point2D mousePos = trans.inverseTransform(lastX, lastY);
-                MapRoadSegment nearestRoad = (MapRoadSegment)
-                        model.nearestNeighbor(new MapPoint((float) mousePos.getX(), (float) -mousePos.getY(), ""));
-                //System.out.println(new Point2D(mousePos.getX(), -mousePos.getY()));
-            } catch (NonInvertibleTransformException ex) {
-                throw new RuntimeException(ex);
-            }
-        });
-        canvas.setOnMouseDragged(e -> {
-            if (e.isPrimaryButtonDown()) {
-                double dx = e.getX() - lastX;
-                double dy = e.getY() - lastY;
-                pan(dx, dy, true);
-            }
-
-            lastX = e.getX();
-            lastY = e.getY();
-        });
-        canvas.setOnScroll(e -> {
-            double factor = e.getDeltaY();
-            zoom(e.getX(), e.getY(), Math.pow(1.01, factor));
-        });
+        initView();
     }
 
     public void initView(){
-        zoom = 0;
+        zoomValue = 0;
         focusedElements = new ArrayList<>();
         trans = new Affine();
         pan(-0.56*model.getMinLon(), model.getMaxLat());
@@ -183,8 +137,6 @@ public class Controller implements Initializable {
     }
 
     public void draw() {
-        //var start = System.nanoTime();
-
         graphicsContext.setTransform(new Affine());
         graphicsContext.setLineWidth(1/Math.sqrt(trans.determinant()));
 
@@ -192,11 +144,6 @@ public class Controller implements Initializable {
         graphicsContext.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
         graphicsContext.setTransform(trans);
-
-        zoom = (int) graphicsContext.getTransform().getMxx();
-        zoomLevel.setText(String.valueOf(Math.round(zoom / 1000F)));
-
-        model.setDrawingArea(drawingBoundMin, drawingBoundMax, zoom);
 
         for (MapElement e : model.getElementsToDraw()) {
             model.getTheme().prepareDraw(graphicsContext, e.getType(), trans.determinant());
@@ -217,8 +164,6 @@ public class Controller implements Initializable {
         /*graphicsContext.strokeRect(localBoundMin.getX(), localBoundMin.getY(),
                 localBoundMax.getX()-localBoundMin.getX(),
                 localBoundMax.getY()-localBoundMin.getY());*/
-
-        //System.out.println((System.nanoTime() - start) / 1000000);
     }
 
     public void showHelpPopup(){
@@ -242,15 +187,22 @@ public class Controller implements Initializable {
         Bounds bounds = canvas.getBoundsInLocal();
 
         try {
+            /*
+                Get current bounds of the Canvas without transformations to represent
+                points as X and Y / lon and lat
+             */
             //localBoundMin = trans.inverseTransform(bounds.getMinX() + 60, bounds.getMinY() + 60);
             //localBoundMax = trans.inverseTransform(bounds.getMaxX() - 60, bounds.getMaxY() - 60);
             localBoundMin = trans.inverseTransform(bounds.getMinX(), bounds.getMinY());
             localBoundMax = trans.inverseTransform(bounds.getMaxX(), bounds.getMaxY());
 
-            drawingBoundMin = new float[]{ (float)localBoundMin.getX(), (float)-localBoundMax.getY() };
-            drawingBoundMax = new float[]{ (float)localBoundMax.getX(), (float)-localBoundMin.getY() };
+            // Get reference points for query in R-tree, where
+            var drawingBoundMin = new float[]{ (float)localBoundMin.getX(), (float)-localBoundMax.getY() };
+            var drawingBoundMax = new float[]{ (float)localBoundMax.getX(), (float)-localBoundMin.getY() };
+            model.setDrawingArea(drawingBoundMin, drawingBoundMax, zoomValue);
         } catch (NonInvertibleTransformException e) {
-            // lol
+            // Not sure how to handle this if it ever happens
+            throw new RuntimeException(e.getMessage());
         }
     }
 
@@ -264,6 +216,7 @@ public class Controller implements Initializable {
             pan(-element.getMinPoint()[0] + screenCenterX, element.getMinPoint()[1] + screenCenterY);
             zoom(0, 0, canvas.getHeight() / (model.getMaxLat() - model.getMinLat()));
             zoom(0, 0, 80.0);
+            draw();
         }
     }
 
@@ -271,18 +224,12 @@ public class Controller implements Initializable {
         focusElement(element, false);
     }
 
-    private void pan(double dx, double dy, boolean draw) {
-        pan(dx, dy);
-        if (draw) draw();
-    }
-
-    private void pan(double dx, double dy) {
+    public void pan(double dx, double dy) {
         trans.prependTranslation(dx, dy);
-        // canvas bounds
         updateCanvasBounds();
     }
 
-    private void zoom(double dx, double dy, double factor) {
+    void zoom(double dx, double dy, double factor) {
         int MAX_ZOOM_LEVEL = 1_050_000;
         double newMxx = trans.getMxx() * factor;
         if ((newMxx < (canvas.getHeight() / (model.getMaxLat() - model.getMinLat())) || newMxx > MAX_ZOOM_LEVEL)) {
@@ -292,38 +239,18 @@ public class Controller implements Initializable {
         pan(-dx, -dy);
         trans.prependScale(factor, factor);
         pan(dx, dy);
-        // Figure out some good number
 
-        draw();
+        zoomValue = (int) graphicsContext.getTransform().getMxx();
+        zoomLevel.setText(String.valueOf(Math.round(zoomValue / 1000F)));
     }
 
-
-    /**
-     * Returns a canvas that can contain map elements
-     */
-    public Canvas getCanvas() {
-        return canvas;
-    }
-
-    public String getTextFieldText(){
-        return textField.getText();
-    }
-
-    public void setTextFieldText(String s){
-        textField.setText(s);
-    }
+    public Canvas getCanvas() { return canvas; }
+    public Affine getAffine() { return trans; }
+    public Label getNearestRoadLabel() { return nearestRoad; }
+    public TextField getTextField () { return textField; }
 
     public void setErrorLabelText(String s){
         errorLabel.setText(s);
     }
-
-    public void setZoomLevel(int zoom){
-        zoomLevel.setText(Integer.toString(zoom));
-    }
-
-    public void setErrorLabel(String errorMessage){
-        errorLabel.setText(errorMessage);
-    }
-
 }
 
