@@ -169,8 +169,8 @@ public class Controller implements Initializable {
     public void handleKeyTyped(KeyEvent keyEvent) {
         if (keyEvent.getCharacter().equals("" + (char)13)){ // 13 is the ascii character for carriage-return, and it is being cast to char and then String
             try {
+                errorLabel.setText("Command accepted");
                 commandExecutor.executeCommand(textField.getCharacters().toString());
-                //errorLabel.setText("Command accepted");
             } catch (CommandParser.IllegalCommandException | IllegalArgumentException ice) {
                 errorLabel.setText(ice.getMessage());
             } /*catch (NullPointerException npe){
