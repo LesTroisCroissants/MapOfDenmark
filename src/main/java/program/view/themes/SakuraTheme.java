@@ -12,6 +12,6 @@ public class SakuraTheme extends Theme {
                 Color.web("#F1E4F3"), //land
                 Color.web("#F4BBD3"), //buildings
                 Color.web("#F4BBD3"), //other
-                Color.RED);                     //highlighted
+                Color.web("#FF2E4D"));         //#96FF66 (Green)            //highlighted
     }
 }

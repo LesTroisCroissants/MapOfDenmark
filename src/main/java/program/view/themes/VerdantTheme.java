@@ -12,7 +12,7 @@ public class VerdantTheme extends Theme {
                 Color.web("34403A"), //land
                 Color.web("#285238"), //buildings
                 Color.web("#138A36"), //other
-                Color.RED);                     //highlighted
+                Color.web("#FF8093"));                     //highlighted
     }
 
 }

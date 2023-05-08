@@ -2,12 +2,8 @@ package program.controller;
 
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import program.model.Model;
 import program.model.ModelContact;
-import program.shared.MapElement;
 import program.shared.MapPoint;
-import program.shared.Point;
-import program.view.ViewContact;
 
 import java.io.File;
 
@@ -28,18 +24,21 @@ public class CommandExecutor {
     }
 
     public void addressSearch(String address){
-        MapPoint me = model.addressSearch(address);
-        selectElement(me);
+        MapPoint mapPoint = model.checkPOIRegistry(address);
+        if (mapPoint == null) {
+            mapPoint = model.addressSearch(address);
+        }
+        selectElement(mapPoint);
     }
 
     public void planRoute(String address, boolean to) throws CommandParser.IllegalCommandException {
         if (selectedElement == null) throw new CommandParser.IllegalCommandException("Cannot find path to " + address + " with no start destination.");
-        MapPoint me = model.addressSearch(address);
-
-        if (to){
-            model.planRoute(selectedElement, me);
+        MapPoint mapPoint = model.checkPOIRegistry(address);
+        if (mapPoint == null) {
+            mapPoint = model.addressSearch(address);
         }
-        else model.planRoute(me, selectedElement);
+        if (to) model.planRoute(selectedElement, mapPoint);
+        else model.planRoute(mapPoint, selectedElement);
         controller.draw();
         controller.panTo(model.getMiddlePoint(), 2);
     }
@@ -51,6 +50,8 @@ public class CommandExecutor {
 
     public void quitSelection(){
         selectedElement = null;
+        controller.clearSelection();
+
     }
 
     public void setPOI(String id, String address){

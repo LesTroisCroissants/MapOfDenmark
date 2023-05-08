@@ -9,9 +9,9 @@ public class BrookTheme extends Theme {
         super(Color.web("#00A6FB"),   //primary
                 Color.web("#00A6FB"), //secondary
                 Color.web("#0582CA"), //tertiary
-                Color.web("#051923"), //land
+                Color.web("#051923"), //lRand
                 Color.web("#003554"), //buildings
                 Color.web("#006494"), //other
-                Color.RED);                     //highlighted
+                Color.web("FA5700")); //#FFFFFF (white)                   //highlighted
     }
 }

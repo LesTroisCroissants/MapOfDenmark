@@ -109,6 +109,10 @@ public class Model implements ModelContact{
         return middlePoint;
     }
 
+    public void clearRoute() {
+        getPlannedRoute().clear();
+    }
+
     @Override
     public List<MapRoadSegment> getPlannedRoute() {
         return plannedRoute;
@@ -181,8 +185,8 @@ public class Model implements ModelContact{
     public void setPOI(String id, String address) {
         // Can keep nearest neighbor on save
         try {
-            MapElement mapElementAddress = addressSearch(address);
-            poiRegistry.putPOI(id, mapElementAddress);
+            MapPoint mapPointAddress = addressSearch(address);
+            poiRegistry.putPOI(id, mapPointAddress);
         } catch (AddressParser.InvalidAddressException e) {
             throw e;
         }
@@ -197,6 +201,16 @@ public class Model implements ModelContact{
     @Override
     public Iterable<String> getPOIs() {
         return poiRegistry.getIds();
+    }
+
+    public MapPoint checkPOIRegistry(String id) {
+        MapPoint mapPoint = null;
+        try {
+            mapPoint = (MapPoint) poiRegistry.getPOI(id);
+        } catch (IllegalArgumentException e) {
+            return mapPoint;
+        }
+        return mapPoint;
     }
 
     @Override

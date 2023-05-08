@@ -166,6 +166,12 @@ public class Controller implements Initializable {
                 localBoundMax.getY()-localBoundMin.getY());*/
     }
 
+    public void clearSelection() {
+        focusedElements.clear();
+        model.clearRoute();
+        draw();
+    }
+
     public void showHelpPopup(){
         view.showHelpPopup();
     }
