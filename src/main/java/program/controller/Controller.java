@@ -97,6 +97,7 @@ public class Controller implements Initializable {
         trans = new Affine();
         pan(-0.56*model.getMinLon(), model.getMaxLat());
         zoom(0, 0, canvas.getHeight() / (model.getMaxLat() - model.getMinLat()));
+        updateCanvasBounds();
     }
 
     private void initializeCanvas(){
