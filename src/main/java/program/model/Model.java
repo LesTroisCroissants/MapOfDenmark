@@ -193,12 +193,6 @@ public class Model implements ModelContact{
     }
 
     @Override
-    public void setPOI(String id, float lat, float lon) {
-        // Can keep nearest neighbor on save
-        poiRegistry.putPOI(id, lat, lon);
-    }
-
-    @Override
     public Iterable<String> getPOIs() {
         return poiRegistry.getIds();
     }

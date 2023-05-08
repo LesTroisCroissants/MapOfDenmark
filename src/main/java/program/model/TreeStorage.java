@@ -76,6 +76,7 @@ public class TreeStorage implements Serializable {
     }
 
     public MapRoadSegment nearestNeighbor(MapPoint q) {
+        System.out.println(q.getMinPoint()[0] + " " + q.getMinPoint()[1]);
         var start = System.nanoTime();
         List<MapRoadSegment> nearestSegments = new ArrayList<>();
         // Add from all road trees

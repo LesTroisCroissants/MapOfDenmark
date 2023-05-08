@@ -20,12 +20,12 @@ public class MapEventHandler {
     public MapEventHandler(Controller _controller, ModelContact model) {
         controller = _controller;
         canvas = controller.getCanvas();
-        trans = controller.getAffine();
 
         lastMousePosition = new Point2D(0, 0);
         lastMouseClickPosition = new Point2D(0, 0);
 
         canvas.setOnMouseMoved(e -> {
+            trans = controller.getAffine();
             var timeNow = System.nanoTime();
             if ((timeNow - timeSinceLastMove) / 1_000_000 < 100) return;
             var mouseX = e.getX();
@@ -49,6 +49,7 @@ public class MapEventHandler {
         });
 
         canvas.setOnMouseReleased(e -> {
+            trans = controller.getAffine();
             // Check if current mouse position is different to the last click
             if (e.getX() != lastMouseClickPosition.getX() || e.getY() != lastMouseClickPosition.getY()) return;
 

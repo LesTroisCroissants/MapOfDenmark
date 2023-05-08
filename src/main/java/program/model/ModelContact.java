@@ -10,28 +10,27 @@ import program.view.Theme;
 import static program.model.Model.MOT;
 
 public interface ModelContact {
-    public MapPoint addressSearch(String address);
-    public void planRoute(MapPoint from, MapPoint to);
-    public void clearRoute();
-    public List<MapRoadSegment> getPlannedRoute();
-    public Iterable<String> getInstructions();
+    MapPoint addressSearch(String address);
+    void planRoute(MapPoint from, MapPoint to);
+    void clearRoute();
+    List<MapRoadSegment> getPlannedRoute();
+    Iterable<String> getInstructions();
     Iterable<String> getPOIs();
-    public MapElement nearestNeighbor (MapPoint q);
-    public void setPOI(String id, String address);
-    public void setPOI(String id, float lat, float lon);
+    MapElement nearestNeighbor (MapPoint q);
+    void setPOI(String id, String address);
 
 
-    public MapPoint checkPOIRegistry(String id);
-    public void setTheme(String theme);
-    public Theme getTheme();
-    public void setModeOfTransportation(MOT modeOfTransportation);
-    public List<MapElement> getElementsToDraw();
-    public void setDrawingArea(float[] p1, float[] p2, int zoomLevel);
-    public float getMinLon();
-    public float getMinLat();
-    public float getMaxLon();
-    public float getMaxLat();
-    public void setDebug(boolean debug);
+    MapPoint checkPOIRegistry(String id);
+    void setTheme(String theme);
+    Theme getTheme();
+    void setModeOfTransportation(MOT modeOfTransportation);
+    List<MapElement> getElementsToDraw();
+    void setDrawingArea(float[] p1, float[] p2, int zoomLevel);
+    float getMinLon();
+    float getMinLat();
+    float getMaxLon();
+    float getMaxLat();
+    void setDebug(boolean debug);
 
     void loadNewFile(String fileName);
 
