@@ -35,9 +35,13 @@ public class CommandExecutor {
     public void planRoute(String address, boolean to) throws CommandParser.IllegalCommandException {
         if (selectedElement == null) throw new CommandParser.IllegalCommandException("Cannot find path to " + address + " with no start destination.");
         MapPoint me = model.addressSearch(address);
-        if (to) model.planRoute(selectedElement, me);
+
+        if (to){
+            model.planRoute(selectedElement, me);
+        }
         else model.planRoute(me, selectedElement);
         controller.draw();
+        controller.panTo(model.getMiddlePoint(), 2);
     }
 
     private void selectElement(MapPoint element){

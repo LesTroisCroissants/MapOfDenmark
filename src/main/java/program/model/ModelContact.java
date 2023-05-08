@@ -32,4 +32,6 @@ public interface ModelContact {
     public void setDebug(boolean debug);
 
     void loadNewFile(String fileName);
+
+    MapPoint getMiddlePoint();
 }

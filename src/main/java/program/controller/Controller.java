@@ -209,13 +209,17 @@ public class Controller implements Initializable {
     private void focusElement(MapPoint element, boolean clean) {
         if (clean) focusedElements.clear();
         focusedElements.add(element);
+        panTo(element, 80);
+    }
+
+    public void panTo(MapPoint element, int factor) {
         for (int i = 0; i < 2; i++) { // we assume that we have to do this twice because of JavaFX funkiness
             trans = new Affine();
             var screenCenterX = (localBoundMax.getX() - localBoundMin.getX())/2;
             var screenCenterY = (localBoundMax.getY() - localBoundMin.getY())/2;
             pan(-element.getMinPoint()[0] + screenCenterX, element.getMinPoint()[1] + screenCenterY);
             zoom(0, 0, canvas.getHeight() / (model.getMaxLat() - model.getMinLat()));
-            zoom(0, 0, 80.0);
+            zoom(0, 0, factor);
             draw();
         }
     }

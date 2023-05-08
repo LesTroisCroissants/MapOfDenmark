@@ -20,6 +20,8 @@ public class Model implements ModelContact{
     private List<MapRoadSegment> plannedRoute;
     private Iterable<String> instructions;
 
+    private MapPoint middlePoint;
+
 
     public enum MOT{
         CAR,
@@ -33,7 +35,7 @@ public class Model implements ModelContact{
         addressBook = AddressBook.getInstance();
         edges = new ArrayList<>();
 
-        String toOpen = "/home/apple/Documents/ITU/Semester2/FYPMD/MapOfDenmark/bornholm.zip";
+        String toOpen = "src/main/data/bornholm.zip";
         open(toOpen);
 
         poiRegistry = POIRegistry.getInstance();
@@ -89,7 +91,6 @@ public class Model implements ModelContact{
         Vertex start = storage.nearestVertex(from);
         Vertex end = storage.nearestVertex(to);
         BiDirectionalDijkstra bididi = new BiDirectionalDijkstra(start, end, modeOfTransport);
-
         plannedRoute = bididi.getPath();
         instructions = bididi.getInstructions();
         System.out.println("route planning time: " + (System.nanoTime()-startTime) / 1_000_000);
@@ -97,6 +98,15 @@ public class Model implements ModelContact{
         for (String s : bididi.getInstructions()) {
             System.out.println(s);
         }
+        setMiddlePoint(calculateMiddlePoint(from.getMaxPoint(),to.getMaxPoint()));
+    }
+
+    private void setMiddlePoint(MapPoint middlePoint) {
+        this.middlePoint = middlePoint;
+    }
+
+    public MapPoint getMiddlePoint() {
+        return middlePoint;
     }
 
     @Override
@@ -145,6 +155,10 @@ public class Model implements ModelContact{
         } catch (IOException | XMLStreamException | ClassNotFoundException e) {
             e.printStackTrace();
         }
+    }
+
+    private MapPoint calculateMiddlePoint(float[] from, float[] to){
+        return new MapPoint((to[0] - from[0])/2 + from[0],  (to[1] - from[1])/2 + from[1], "");
     }
 
     @Override
