@@ -33,7 +33,7 @@ public class Model implements ModelContact{
         addressBook = AddressBook.getInstance();
         edges = new ArrayList<>();
 
-        String toOpen = "/Users/niklaschristensen/Desktop/MapOfDenmark/src/main/fyn.osm.zip.obj";
+        String toOpen = "src/main/data/fyn.osm.zip.obj";
         open(toOpen);
 
         poiRegistry = POIRegistry.getInstance();
