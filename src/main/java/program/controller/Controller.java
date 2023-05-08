@@ -10,7 +10,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
-import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
 import program.model.Model;
@@ -18,7 +17,6 @@ import program.model.ModelContact;
 import program.shared.MapElement;
 import program.shared.MapPoint;
 import program.shared.MapRoadSegment;
-import program.shared.Point;
 import program.view.View;
 import program.view.ViewContact;
 
@@ -139,6 +137,14 @@ public class Controller implements Initializable {
         });
     }
 
+    public void initView(){
+        zoom = 0;
+        focusedElements = new ArrayList<>();
+        trans = new Affine();
+        pan(-0.56*model.getMinLon(), model.getMaxLat());
+        zoom(0, 0, canvas.getHeight() / (model.getMaxLat() - model.getMinLat()));
+    }
+
     private void initializeCanvas(){
         canvas.setWidth(920);
         canvas.setHeight(530);
@@ -164,7 +170,7 @@ public class Controller implements Initializable {
         if (keyEvent.getCharacter().equals("" + (char)13)){ // 13 is the ascii character for carriage-return, and it is being cast to char and then String
             try {
                 commandExecutor.executeCommand(textField.getCharacters().toString());
-                errorLabel.setText("Command accepted");
+                //errorLabel.setText("Command accepted");
             } catch (CommandParser.IllegalCommandException | IllegalArgumentException ice) {
                 errorLabel.setText(ice.getMessage());
             } /*catch (NullPointerException npe){
@@ -300,6 +306,10 @@ public class Controller implements Initializable {
 
     public void setTextFieldText(String s){
         textField.setText(s);
+    }
+
+    public void setErrorLabelText(String s){
+        errorLabel.setText(s);
     }
 
     public void setZoomLevel(int zoom){

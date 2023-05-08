@@ -33,7 +33,7 @@ public class Model implements ModelContact{
         addressBook = AddressBook.getInstance();
         edges = new ArrayList<>();
 
-        String toOpen = "/Users/philip/Library/CloudStorage/OneDrive-ITU/uni/Semester 2/FYPMO/BFST23Group12/src/main/nyborg.zip";
+        String toOpen = "/Users/niklaschristensen/Desktop/MapOfDenmark/src/main/fyn.osm.zip.obj";
         open(toOpen);
 
         poiRegistry = POIRegistry.getInstance();
@@ -137,6 +137,14 @@ public class Model implements ModelContact{
     @Override
     public void setDebug(boolean debug) {
         storage.setDebug(debug);
+    }
+
+    public void loadNewFile(String fileName) {
+        try {
+            open(fileName);
+        } catch (IOException | XMLStreamException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

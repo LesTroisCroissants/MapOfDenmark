@@ -27,4 +27,6 @@ public interface ModelContact {
     public float getMaxLon();
     public float getMaxLat();
     public void setDebug(boolean debug);
+
+    void loadNewFile(String fileName);
 }

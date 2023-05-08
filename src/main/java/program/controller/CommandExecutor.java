@@ -1,11 +1,15 @@
 package program.controller;
 
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import program.model.Model;
 import program.model.ModelContact;
 import program.shared.MapElement;
 import program.shared.MapPoint;
 import program.shared.Point;
 import program.view.ViewContact;
+
+import java.io.File;
 
 import static program.model.Model.MOT;
 public class CommandExecutor {
@@ -84,5 +88,18 @@ public class CommandExecutor {
         model.setDrawingArea(new float[]{ 0, 0 }, new float[]{ 100, 100 }, 0);
         model.getElementsToDraw();
         controller.draw();
+    }
+
+    public void load() {
+        String defaultFilePath = "src/main/data";
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setInitialDirectory(new File(defaultFilePath));
+        Stage chooserStage = new Stage();
+        File selectedFile = fileChooser.showOpenDialog(chooserStage);
+        String filePath = selectedFile.getAbsolutePath();
+        String fileName = selectedFile.getName();
+        model.loadNewFile(filePath);
+        controller.setErrorLabelText("loaded file: " + fileName);
+        controller.initView();
     }
 }

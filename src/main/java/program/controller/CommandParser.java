@@ -108,6 +108,10 @@ public class CommandParser {
                 c.setDebug();
                 break;
 
+                case "!load":
+                    c.load();
+                    break;
+
             default:
                 throw new IllegalCommandException("Command " + toExecute + " is not a legal command");
         }
