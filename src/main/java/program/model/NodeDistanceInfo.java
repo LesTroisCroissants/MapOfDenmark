@@ -1,8 +1,5 @@
 package program.model;
 
-import program.shared.IBoundingBox;
-import program.shared.Point;
-
 public class NodeDistanceInfo<type extends IBoundingBox> implements Comparable<NodeDistanceInfo<type>> {
     float minDist;
     float minMaxDist;
