@@ -3,6 +3,7 @@ package program.controller;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import program.model.ModelContact;
+import program.shared.Address;
 import program.shared.MapPoint;
 
 import java.io.File;
@@ -25,21 +26,24 @@ public class CommandExecutor {
 
     public void addressSearch(String address){
         quitSelection();
-        MapPoint mapPoint = model.checkPOIRegistry(address);
-        if (mapPoint == null) {
-            mapPoint = model.addressSearch(address);
-        }
+
+        // use POI if possible
+        Address poiAddress = model.checkPOIRegistry(address);
+        MapPoint mapPoint = (poiAddress != null) ? model.addressSearch(poiAddress.toString()) : model.addressSearch(address);
+
         selectElement(mapPoint);
     }
 
     public void planRoute(String address, boolean to) throws CommandParser.IllegalCommandException {
         if (selectedElement == null) throw new CommandParser.IllegalCommandException("Cannot find path to " + address + " with no start destination.");
-        MapPoint mapPoint = model.checkPOIRegistry(address);
-        if (mapPoint == null) {
-            mapPoint = model.addressSearch(address);
-        }
-        if (to) model.planRoute(selectedElement, mapPoint);
-        else model.planRoute(mapPoint, selectedElement);
+
+        // use POI if possible
+        Address poiAddress = model.checkPOIRegistry(address);
+        MapPoint point = (poiAddress != null) ? model.addressSearch(poiAddress.toString()) : model.addressSearch(address);
+
+        if (to) model.planRoute(selectedElement, point);
+        else model.planRoute(point, selectedElement);
+
         controller.draw();
         controller.panTo(model.getMiddlePoint(), 2);
     }
@@ -52,7 +56,6 @@ public class CommandExecutor {
     public void quitSelection(){
         selectedElement = null;
         controller.clearSelection();
-
     }
 
     public void setPOI(String id, String address){

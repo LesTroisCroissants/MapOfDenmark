@@ -40,7 +40,7 @@ public class CommandParser {
         switch (toExecute) {
                 //Points
             case "":
-                c.addressSearch(address.toLowerCase());
+                c.addressSearch(address);
                 break;
             case "!as":
                 if (address.equals("") || id.equals("")) throw new IllegalCommandException("Command !as takes both an address and an ID");
@@ -107,10 +107,6 @@ public class CommandParser {
             case "!debug":
                 c.setDebug();
                 break;
-
-                case "!load":
-                    c.load();
-                    break;
 
             default:
                 throw new IllegalCommandException("Command " + toExecute + " is not a legal command");

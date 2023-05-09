@@ -53,6 +53,11 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
+// TODO run config with X gb of ram
+tasks.withType(JavaExec).configureEach {
+    jvmArgs = ['-Xms512m', '-Xmx10240m']
+}
+
 javafx {
     version = "19"
     modules = ['javafx.controls', 'javafx.fxml']

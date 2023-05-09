@@ -1,5 +1,6 @@
 package program.model;
 
+import program.shared.Address;
 import program.shared.MapElement;
 import program.shared.MapPoint;
 
@@ -7,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class POIRegistry {
-    private final Map<String, MapPoint> pointsOfInterest;
+    private final Map<String, Address> pointsOfInterest;
     private static POIRegistry registry;
 
     public static POIRegistry getInstance(){
@@ -22,21 +23,10 @@ public class POIRegistry {
     /**
      * Adds a POI from a given Address with a given name
      * @param id
-     * @param mapPoint
+     * @param address
      */
-    public void putPOI(String id, MapPoint mapPoint){
-        pointsOfInterest.put(id, mapPoint);
-    }
-
-    /**
-     * Adds a POI from given coordinates with a given name
-     * @param id
-     * @param lat
-     * @param lon
-     */
-    public void putPOI(String id, float lat, float lon){
-        MapPoint point = new MapPoint(lat, lon, "");
-        putPOI(id, point);
+    public void putPOI(String id, Address address){
+        pointsOfInterest.put(id, address);
     }
 
     /**
@@ -49,12 +39,12 @@ public class POIRegistry {
     }
 
     /**
-     * Returns the MapElement corresponding to a given id or throws an exception if the id has not been set
+     * Returns the Address corresponding to a given id or throws an exception if the id has not been set
      * @param id
      * @return
      * @throws IllegalArgumentException
      */
-    public MapElement getPOI(String id) {
+    public Address getPOI(String id) {
         if (pointsOfInterest.containsKey(id)) return pointsOfInterest.get(id);
         else throw new IllegalArgumentException("No point of interest of that name has been set");
     }
@@ -71,7 +61,7 @@ public class POIRegistry {
      * Returns an Iterable of all MapElements associated with a POI
      * @return
      */
-    public Iterable<MapPoint> getLocations(){
+    public Iterable<Address> getLocations(){
         return pointsOfInterest.values();
     }
 

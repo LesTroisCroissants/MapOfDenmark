@@ -1,11 +1,9 @@
 package program.model;
 
-import program.shared.MapElement;
+import program.shared.*;
+
 import java.util.List;
 
-import program.shared.MapPoint;
-import program.shared.MapRoadSegment;
-import program.shared.Point;
 import program.view.Theme;
 import static program.model.Model.MOT;
 
@@ -19,8 +17,7 @@ public interface ModelContact {
     MapElement nearestNeighbor (MapPoint q);
     void setPOI(String id, String address);
 
-
-    MapPoint checkPOIRegistry(String id);
+    Address checkPOIRegistry(String id);
     void setTheme(String theme);
     Theme getTheme();
     void setModeOfTransportation(MOT modeOfTransportation);
