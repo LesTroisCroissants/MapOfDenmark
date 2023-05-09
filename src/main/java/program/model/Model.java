@@ -99,9 +99,6 @@ public class Model implements ModelContact{
         instructions = bididi.getInstructions();
         System.out.println("route planning time: " + (System.nanoTime()-startTime) / 1_000_000);
 
-        for (String s : bididi.getInstructions()) {
-            System.out.println(s);
-        }
         setMiddlePoint(calculateMiddlePoint(from.getMaxPoint(),to.getMaxPoint()));
     }
 

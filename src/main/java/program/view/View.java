@@ -202,6 +202,7 @@ public class View implements ViewContact {
         ScrollPane scrollPane = new ScrollPane(textArea);
         scrollPane.setPrefSize(400, 400);
         scrollPane.setFitToWidth(true);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
         Scene scene = new Scene(scrollPane);
 
