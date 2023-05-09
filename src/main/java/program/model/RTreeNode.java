@@ -14,8 +14,6 @@ public class RTreeNode implements IBoundingBox, Serializable {
     List<MapElement> elements;
     public RTreeNode(int maxChildren) {
         this.maxChildren = maxChildren;
-        children = new ArrayList<>(maxChildren);
-        elements = new ArrayList<>(maxChildren);
         min = new float[]{ Float.MAX_VALUE, Float.MAX_VALUE };
         max = new float[]{ Float.MIN_VALUE, Float.MIN_VALUE };
     }
@@ -24,13 +22,15 @@ public class RTreeNode implements IBoundingBox, Serializable {
     public float[] getMaxPoint() { return max; }
 
     public void addElement (MapElement e) {
+        if (elements == null) elements = new ArrayList<>();
         elements.add(e);
-        if (elements.size() <= maxChildren) updateBoundingBox();
+        if (elements.size() < maxChildren) updateBoundingBox();
     }
 
     public void addChild(RTreeNode n) {
+        if (children == null) children = new ArrayList<>();
         children.add(n);
-        if (children.size() <= maxChildren) updateBoundingBox();
+        if (children.size() < maxChildren) updateBoundingBox();
     }
 
     public void updateBoundingBox() {
@@ -47,7 +47,10 @@ public class RTreeNode implements IBoundingBox, Serializable {
         max = new float[]{ xMax, yMax };
     }
 
+    public int getChildrenSize() { return children == null ? 0 : children.size(); }
+    public int getElementsSize() { return elements == null ? 0 : elements.size(); }
+
     public boolean isLeaf() {
-        return children.size() == 0;
+        return getChildrenSize() == 0;
     }
 }
