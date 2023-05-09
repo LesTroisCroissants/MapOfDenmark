@@ -256,7 +256,7 @@ public class Controller implements Initializable {
         pan(-dx, -dy);
         trans.prependScale(factor, factor);
         zoomValue = (int) graphicsContext.getTransform().getMxx();
-        zoomLevel.setText(String.valueOf(Math.round(zoomValue / 1000F)));
+        zoomLevel.setText("Zoom level: " + Math.round(zoomValue / 100F));
         pan(dx, dy);
 
     }
