@@ -35,7 +35,7 @@ public class Model implements ModelContact{
         addressBook = AddressBook.getInstance();
         edges = new ArrayList<>();
 
-        String toOpen = "src/main/data/fyn.zip";
+        String toOpen = "src/main/data/denmark-latest.osm.zip.obj";
         open(toOpen);
 
         poiRegistry = POIRegistry.getInstance();
@@ -53,6 +53,10 @@ public class Model implements ModelContact{
     }
 
     private void open(String fileName) throws IOException, XMLStreamException, ClassNotFoundException {
+        addressBook.clear();
+        edges.clear();
+        storage = null;
+
         if(fileName.endsWith(".obj")){
             try (ObjectInputStream in = new ObjectInputStream(new BufferedInputStream(new FileInputStream(fileName)))){
                 storage = (TreeStorage) in.readObject();
