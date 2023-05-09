@@ -36,7 +36,8 @@ public class BiDirectionalDijkstra {
     }
 
     private Vertex handleBadStartForward(Vertex current){
-        PriorityQueue<Vertex> vertices = new PriorityQueue<>();
+
+        ArrayDeque<Vertex> vertices = new ArrayDeque<>();
         vertices.add(current);
         while(!vertices.isEmpty()){
             current = vertices.remove();
@@ -52,7 +53,7 @@ public class BiDirectionalDijkstra {
     }
 
     private Vertex handleBadStartBackward(Vertex current){
-        PriorityQueue<Vertex> vertices = new PriorityQueue<>();
+        ArrayDeque<Vertex> vertices = new ArrayDeque<>();
         vertices.add(current);
         while(!vertices.isEmpty()){
             current = vertices.remove();
