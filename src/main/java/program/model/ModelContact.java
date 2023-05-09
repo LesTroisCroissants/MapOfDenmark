@@ -30,7 +30,7 @@ public interface ModelContact {
     float getMinLat();
     float getMaxLon();
     float getMaxLat();
-    void setDebug(boolean debug);
+    void setDebug(boolean debug, List<String> trees);
 
     void loadNewFile(String fileName);
 
