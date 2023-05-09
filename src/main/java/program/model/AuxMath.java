@@ -65,4 +65,10 @@ public class AuxMath {
 
         return (intersection.getX() - from.getX()) * (to.getY() - from.getY()) - (to.getX() - from.getX()) * (intersection.getY() - from.getY());
     }
+
+    public static float calculateDistance(Vertex vertexFrom, Vertex vertexTo){
+        float xDifference = vertexTo.getX() - vertexFrom.getX();
+        float yDifference = vertexTo.getY() - vertexFrom.getY();
+        return (float) Math.sqrt(Math.pow(xDifference, 2) + Math.pow(yDifference, 2));
+    }
 }

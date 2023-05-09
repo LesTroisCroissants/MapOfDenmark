@@ -3,7 +3,7 @@ package program.shared;
 import java.io.Serializable;
 
 public class Point implements Serializable {
-    private float x, y;
+    private final float x, y;
     private transient long id;
 
     public Point(float x, float y) {
@@ -19,6 +19,4 @@ public class Point implements Serializable {
     public long getId() { return id; }
     public float getX() { return x; }
     public float getY() { return y; }
-    public void setX(float x) { this.x = x; }
-    public void setY(float y) { this.y = y; }
 }
