@@ -29,6 +29,9 @@ public class BiDirectionalDijkstra {
         // if the source or destination starts somewhere that you can't go anywhere from we will return the nearest vertex where it is possible to search from
         source = handleBadStartForward(source);
         destination = handleBadStartBackward(destination);
+        if(source == null || destination == null){
+            throw new IllegalArgumentException("No such path exists");
+        }
         initializeDataStructures();
         prepareCurrentShortestPathRelatedFields();
         prepareSourceAndDestination(source, destination);
