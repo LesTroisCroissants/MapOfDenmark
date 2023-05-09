@@ -19,19 +19,33 @@ public class CommandExecutor {
         CommandParser.setCommandExecutor(this);
     }
 
+    /**
+     * Parses and executes a command
+     * @param command a string containing the command
+     * @throws CommandParser.IllegalCommandException when the command given is not part of the system or with wrong number of arguments
+     */
     public void executeCommand(String command) throws CommandParser.IllegalCommandException {
         CommandParser.parseCommand(command);
     }
 
+    /**
+     * Performs the address search command; that is returns a POI matching the query or asking model for the address point
+     * @param address address to be searched for
+     */
     public void addressSearch(String address){
         quitSelection();
         MapPoint mapPoint = model.checkPOIRegistry(address);
-        if (mapPoint == null) {
+        if (mapPoint == null)
             mapPoint = model.addressSearch(address);
-        }
         selectElement(mapPoint);
     }
 
+    /**
+     * Performs the plan route command from/to a previously selected MapElement to/from a given address
+     * @param address address to be used as either source or destination depending on to
+     * @param to indicates if the search conducted should be forward (true) or backward (false)
+     * @throws CommandParser.IllegalCommandException thrown when no MapElement has been selected previously
+     */
     public void planRoute(String address, boolean to) throws CommandParser.IllegalCommandException {
         if (selectedElement == null) throw new CommandParser.IllegalCommandException("Cannot find path to " + address + " with no start destination.");
         MapPoint mapPoint = model.checkPOIRegistry(address);
@@ -44,50 +58,81 @@ public class CommandExecutor {
         controller.panTo(model.getMiddlePoint(), 2);
     }
 
+    /**
+     * Selects the element for use in e.g. pathfinding
+     * @param element element to be selected
+     */
     private void selectElement(MapPoint element){
         selectedElement = element;
         controller.focusElement(element);
     }
 
+    /**
+     * Deselects any selected elements
+     */
     public void quitSelection(){
         selectedElement = null;
         controller.clearSelection();
 
     }
 
+    /**
+     * Performs the set POI command; that is saves an association between the ID and an address
+     * @param id identifying string for the POI
+     * @param address address associated with the ID
+     */
     public void setPOI(String id, String address){
         model.setPOI(id, address);
     }
 
-    //Display-related methods
-
+    /**
+     * Creates a popup displaying currently set POIs
+     */
     public void displayPOIs(){
         controller.showPOIListPopup(model.getPOIs());
     }
 
+    /**
+     * Creates a popup displaying information about the program
+     */
     public void displayProgramInformation(){
         controller.showInfoPopup();
     }
 
+    /**
+     * Creates a popup displaying a reference for using the program
+     */
     public void getHelp(){
         controller.showHelpPopup();
     }
 
+    /**
+     * Creates a popup displaying navigation instructions for a currently planned route
+     */
     public void displayInstructions(){
         controller.showInstructionsPopup(model.getInstructions());
     }
 
-    //Settings-related methods
-
+    /**
+     * Switches the display style to a given theme
+     * @param theme theme to switch to
+     */
     public void setDisplay(String theme){
         model.setTheme(theme);
         controller.draw();
     }
 
+    /**
+     * Sets the mode of transportation
+     * @param modeOfTransportation mode of transportation to be set
+     */
     public void setModeOfTransportation(MOT modeOfTransportation){
         model.setModeOfTransportation(modeOfTransportation);
     }
 
+    /**
+     * Activates debug mode
+     */
     public void setDebug() {
         model.setDebug(true);
         // Use points from view
@@ -96,16 +141,15 @@ public class CommandExecutor {
         controller.draw();
     }
 
+    /**
+     * Performs the load command; that is opens a file navigator from which a .zip or .osm can be opened
+     */
     public void load() {
-        String defaultFilePath = "src/main/data";
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setInitialDirectory(new File(defaultFilePath));
-        Stage chooserStage = new Stage();
-        File selectedFile = fileChooser.showOpenDialog(chooserStage);
-        String filePath = selectedFile.getAbsolutePath();
-        String fileName = selectedFile.getName();
-        model.loadNewFile(filePath);
-        controller.setErrorLabelText("loaded file: " + fileName);
+        fileChooser.setInitialDirectory(new File("src/main/data"));
+        File selectedFile = fileChooser.showOpenDialog(new Stage());
+        model.loadNewFile(selectedFile.getAbsolutePath());
+        controller.setErrorLabelText("loaded file: " + selectedFile.getName());
         controller.initView();
         controller.draw();
     }

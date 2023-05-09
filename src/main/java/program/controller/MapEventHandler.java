@@ -8,22 +8,82 @@ import program.model.ModelContact;
 import program.shared.MapPoint;
 import program.shared.MapRoadSegment;
 
+/**
+ * Handles events that occurs when using the application
+ */
 public class MapEventHandler {
-    private double timeSinceLastMove = 0;
-    private Controller controller;
-    private Canvas canvas;
+    private final Controller controller;
+    private final ModelContact model;
+    private final Canvas canvas;
     private Affine trans;
 
     private Point2D lastMousePosition;
     private Point2D lastMouseClickPosition;
+    private double timeSinceLastMove;
 
-    public MapEventHandler(Controller _controller, ModelContact model) {
-        controller = _controller;
+    public MapEventHandler(Controller controller, ModelContact model) {
+        this.controller = controller;
+        this.model = model;
         canvas = controller.getCanvas();
+        prepareFields();
+        setListeners();
+    }
 
+    private void prepareFields(){
         lastMousePosition = new Point2D(0, 0);
         lastMouseClickPosition = new Point2D(0, 0);
+        timeSinceLastMove = 0;
+    }
 
+    private void setListeners(){
+        addReferencePointPreparer();
+        addPan();
+        addZoom();
+        addShowClosestRoad();
+        addClickRoadToShowInCLI();
+    }
+
+    /**
+     * Adds a listener that saves a reference point for mouse presses used by other methods
+     */
+    private void addReferencePointPreparer(){
+        canvas.setOnMousePressed(e -> {
+            lastMouseClickPosition = new Point2D(e.getX(), e.getY());
+            lastMousePosition = new Point2D(e.getX(), e.getY());
+        });
+    }
+
+    /**
+     * Adds pan when the mouse is dragged
+     */
+    private void addPan(){
+        canvas.setOnMouseDragged(e -> {
+            if (e.isPrimaryButtonDown()) {
+                double dx = e.getX() - lastMousePosition.getX();
+                double dy = e.getY() - lastMousePosition.getY();
+                controller.pan(dx, dy);
+                controller.draw();
+            }
+
+            lastMousePosition = new Point2D(e.getX(), e.getY());
+        });
+    }
+
+    /**
+     * Adds zoom when scrolling
+     */
+    private void addZoom(){
+        canvas.setOnScroll(e -> {
+            double factor = e.getDeltaY();
+            controller.zoom(e.getX(), e.getY(), Math.pow(1.01, factor));
+            controller.draw();
+        });
+    }
+
+    /**
+     * Adds a listener that updates the display with the name of the road closest to the mouse
+     */
+    private void addShowClosestRoad(){
         canvas.setOnMouseMoved(e -> {
             trans = controller.getAffine();
             var timeNow = System.nanoTime();
@@ -42,12 +102,12 @@ public class MapEventHandler {
                 throw new RuntimeException(ex);
             }
         });
+    }
 
-        canvas.setOnMousePressed(e -> {
-            lastMouseClickPosition = new Point2D(e.getX(), e.getY());
-            lastMousePosition = new Point2D(e.getX(), e.getY());
-        });
-
+    /**
+     * Adds a listener that detects if the mouse is clicked and fills in the most nearby road in the command line
+     */
+    private void addClickRoadToShowInCLI(){
         canvas.setOnMouseReleased(e -> {
             trans = controller.getAffine();
             // Check if current mouse position is different to the last click
@@ -63,20 +123,6 @@ public class MapEventHandler {
                 throw new RuntimeException(ex);
             }
         });
-        canvas.setOnMouseDragged(e -> {
-            if (e.isPrimaryButtonDown()) {
-                double dx = e.getX() - lastMousePosition.getX();
-                double dy = e.getY() - lastMousePosition.getY();
-                controller.pan(dx, dy);
-                controller.draw();
-            }
-
-            lastMousePosition = new Point2D(e.getX(), e.getY());
-        });
-        canvas.setOnScroll(e -> {
-            double factor = e.getDeltaY();
-            controller.zoom(e.getX(), e.getY(), Math.pow(1.01, factor));
-            controller.draw();
-        });
     }
+
 }
