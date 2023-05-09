@@ -1,6 +1,5 @@
 package program.model;
 
-import program.shared.IBoundingBox;
 import program.shared.MapElement;
 
 import java.io.Serializable;
@@ -8,10 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RTreeNode implements IBoundingBox, Serializable {
-    private float[] min, max;
-    int maxChildren;
+    private float[] min, max; //the minimum and maximum points of the bounding box
+    int maxChildren; //this implementation does not use a minimum limit
     List<RTreeNode> children;
-    List<MapElement> elements;
+    List<MapElement> elements; //this is null for all nodes except leaves
     public RTreeNode(int maxChildren) {
         this.maxChildren = maxChildren;
         children = new ArrayList<>(maxChildren);
@@ -20,17 +19,26 @@ public class RTreeNode implements IBoundingBox, Serializable {
         max = new float[]{ Float.MIN_VALUE, Float.MIN_VALUE };
     }
 
+    /**
+     * Returns the upper left corner of the MBR
+     * @return
+     */
     public float[] getMinPoint() { return min; }
+
+    /**
+     * Returns the buttom right corner of the MBR
+     * @return
+     */
     public float[] getMaxPoint() { return max; }
 
     public void addElement (MapElement e) {
         elements.add(e);
-        if (elements.size() <= maxChildren) updateBoundingBox();
+        if (elements.size() <= maxChildren) updateBoundingBox(); //This is to avoid updating MBR before a split
     }
 
     public void addChild(RTreeNode n) {
         children.add(n);
-        if (children.size() <= maxChildren) updateBoundingBox();
+        if (children.size() <= maxChildren) updateBoundingBox(); //This is to avoid updating MBR before a split
     }
 
     public void updateBoundingBox() {
@@ -47,6 +55,9 @@ public class RTreeNode implements IBoundingBox, Serializable {
         max = new float[]{ xMax, yMax };
     }
 
+    /**
+     * Returns true if this RTreeNode is a leaf node
+     */
     public boolean isLeaf() {
         return children.size() == 0;
     }
