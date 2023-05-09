@@ -57,6 +57,7 @@ public class CommandParser {
             case "!i":
                 if (!address.equals("") || !id.equals("")) throw new IllegalCommandException("Command !i does not take any arguments");
                 else c.displayInstructions();
+                break;
             case "!f":
             case "!from":
                 if (address.equals("")) throw new IllegalCommandException("Command !from takes either an address or a POI ID");
