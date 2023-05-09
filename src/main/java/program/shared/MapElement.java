@@ -1,6 +1,7 @@
 package program.shared;
 
 import javafx.scene.canvas.GraphicsContext;
+import program.model.IBoundingBox;
 
 import java.io.Serializable;
 
