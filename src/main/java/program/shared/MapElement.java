@@ -5,6 +5,9 @@ import program.model.IBoundingBox;
 
 import java.io.Serializable;
 
+/**
+ * Represents anything data that goes on the map and should be capable of being drawn
+ */
 public abstract class MapElement implements IBoundingBox, Serializable {
     protected float[] minPoint;
     protected float[] maxPoint;

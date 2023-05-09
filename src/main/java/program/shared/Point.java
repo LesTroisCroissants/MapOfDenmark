@@ -2,6 +2,9 @@ package program.shared;
 
 import java.io.Serializable;
 
+/**
+ * Represents a 2-dimensional point with an optional id; not that it is NOT a MapElement
+ */
 public class Point implements Serializable {
     private final float x, y;
     private transient long id;

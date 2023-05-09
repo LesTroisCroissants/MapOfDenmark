@@ -1,5 +1,8 @@
 package program.shared;
 
+/**
+ * Contains information about an address
+ */
 public class Address {
     private final String street, house, postcode, city;
 
@@ -10,9 +13,9 @@ public class Address {
             final String city
     ) {
         this.street = street.toLowerCase().intern();
-        this.house = house == null ? house : house.toLowerCase();
+        this.house = house == null ? null : house.toLowerCase();
         this.postcode = postcode;
-        this.city = city == null ? city : city.toLowerCase();
+        this.city = city == null ? null : city.toLowerCase();
     }
 
     public String getStreet() {

@@ -6,6 +6,9 @@ import program.model.Vertex;
 
 import java.io.*;
 
+/**
+ * Represents a part of a road from one point (vertex) two another
+ */
 public class MapRoadSegment extends MapElement implements Serializable {
     private final Vertex a;
     private final Vertex b;
