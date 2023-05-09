@@ -21,10 +21,16 @@ public class RTree implements Serializable {
         this.maxChildren = maxChildren;
     }
 
+    /**
+     * Inserts MapElement into leaf node
+     * @param element
+     */
     public void insert(MapElement element) {
         elements++;
         RTreeNode node = root;
         Stack<RTreeNode> path = new Stack<>();
+
+        // Find most optimal leaf to insert element into
         while (!node.isLeaf()) {
             path.push(node);
             node = pickChild(node.children, element.getMinPoint(), element.getMaxPoint());
@@ -120,7 +126,7 @@ public class RTree implements Serializable {
     }
 
     private <type extends IBoundingBox> Pair<type, type> findCandidates(List<type> nodes) {
-        float maxArea = 0F;
+        float maxArea = Float.MIN_VALUE;
         type candidate1 = null, candidate2 = null;
         // Find the two elements that create the largest area
         for (int i = 0; i < nodes.size(); i++) {
@@ -138,8 +144,6 @@ public class RTree implements Serializable {
                 }
             }
         }
-        if (candidate1 == null) candidate1 = nodes.get(0);
-        if (candidate2 == null) candidate2 = nodes.get(1);
         return new Pair<>(candidate1, candidate2);
     }
 
@@ -174,9 +178,14 @@ public class RTree implements Serializable {
         return new Pair<>(candidate1Children, candidate2Children);
     }
 
+    /**
+     * Takes RTreeNode and splits its contents into two, using Quadratic Split.
+     * It manipulates the given node and returns the other.
+     * @param node
+     * @return
+     * @param <type>
+     */
     private <type extends IBoundingBox> RTreeNode split(RTreeNode node) {
-        // Change split to exist on insert of node, so that insert can return a node to be inserted
-        // Maybe have node as leaf?
         List<type> nodes = node.isLeaf() ? (ArrayList<type>) node.elements : (ArrayList<type>) node.children;
         RTreeNode newNode = new RTreeNode(maxChildren);
         // Quadratic split finds the two elements that create the most area.
@@ -334,9 +343,10 @@ public class RTree implements Serializable {
 
     private float calculateAreaIncrease(float[] currentMin, float[] currentMax, float[] otherMin, float[] otherMax) {
         float currentArea = (currentMax[0] - currentMin[0]) * (currentMax[1] - currentMin[1]);
+        float otherArea = (otherMax[0] - otherMin[0]) * (otherMax[1] - otherMin[1]);
         float newArea = (Math.max(currentMax[0], otherMax[0]) - Math.min(currentMin[0], otherMin[0]))
                 * (Math.max(currentMax[1], otherMax[1]) - Math.min(currentMin[1], otherMin[1]));
-        return newArea - currentArea;
+        return newArea - currentArea - otherArea;
     }
 
     public void setDebug(boolean debug) {
