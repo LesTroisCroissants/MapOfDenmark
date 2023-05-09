@@ -60,6 +60,9 @@ public class Controller implements Initializable {
     private Point2D localBoundMin;
     private Point2D localBoundMax;
 
+    float[] drawingBoundMin;
+    float[] drawingBoundMax;
+
     private List<MapElement> focusedElements;
     private int zoomValue;
 
@@ -97,6 +100,7 @@ public class Controller implements Initializable {
         trans = new Affine();
         pan(-0.56*model.getMinLon(), model.getMaxLat());
         zoom(0, 0, canvas.getHeight() / (model.getMaxLat() - model.getMinLat()));
+        updateCanvasBounds();
     }
 
     private void initializeCanvas(){
@@ -146,6 +150,7 @@ public class Controller implements Initializable {
         graphicsContext.setTransform(trans);
 
         zoomValue = (int) graphicsContext.getTransform().getMxx();
+        model.setDrawingArea(drawingBoundMin, drawingBoundMax, zoomValue);
 
         for (MapElement e : model.getElementsToDraw()) {
             model.getTheme().prepareDraw(graphicsContext, e.getType(), trans.determinant());
@@ -205,9 +210,9 @@ public class Controller implements Initializable {
             localBoundMax = trans.inverseTransform(bounds.getMaxX(), bounds.getMaxY());
 
             // Get reference points for query in R-tree, where
-            var drawingBoundMin = new float[]{ (float)localBoundMin.getX(), (float)-localBoundMax.getY() };
-            var drawingBoundMax = new float[]{ (float)localBoundMax.getX(), (float)-localBoundMin.getY() };
-            model.setDrawingArea(drawingBoundMin, drawingBoundMax, zoomValue);
+            drawingBoundMin = new float[]{ (float)localBoundMin.getX(), (float)-localBoundMax.getY() };
+            drawingBoundMax = new float[]{ (float)localBoundMax.getX(), (float)-localBoundMin.getY() };
+
         } catch (NonInvertibleTransformException e) {
             // Not sure how to handle this if it ever happens
             throw new RuntimeException(e.getMessage());
@@ -250,10 +255,10 @@ public class Controller implements Initializable {
 
         pan(-dx, -dy);
         trans.prependScale(factor, factor);
-        pan(dx, dy);
-
         zoomValue = (int) graphicsContext.getTransform().getMxx();
         zoomLevel.setText(String.valueOf(Math.round(zoomValue / 1000F)));
+        pan(dx, dy);
+
     }
 
     public Canvas getCanvas() { return canvas; }

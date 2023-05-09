@@ -107,5 +107,6 @@ public class CommandExecutor {
         model.loadNewFile(filePath);
         controller.setErrorLabelText("loaded file: " + fileName);
         controller.initView();
+        controller.draw();
     }
 }
