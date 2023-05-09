@@ -66,6 +66,9 @@ public class Controller implements Initializable {
     private List<MapElement> focusedElements;
     private int zoomValue;
 
+    private boolean debug;
+    private int debugScreenIndent = 120;
+
     public static Controller getInstance(){
         if (instance == null) throw new RuntimeException();
         return instance;
@@ -168,9 +171,11 @@ public class Controller implements Initializable {
             e.draw(graphicsContext);
         }
 
-        /*graphicsContext.strokeRect(localBoundMin.getX(), localBoundMin.getY(),
+        if (debug) {
+            graphicsContext.strokeRect(localBoundMin.getX(), localBoundMin.getY(),
                 localBoundMax.getX()-localBoundMin.getX(),
-                localBoundMax.getY()-localBoundMin.getY());*/
+                localBoundMax.getY()-localBoundMin.getY());
+        }
     }
 
     public void clearSelection() {
@@ -204,10 +209,13 @@ public class Controller implements Initializable {
                 Get current bounds of the Canvas without transformations to represent
                 points as X and Y / lon and lat
              */
-            //localBoundMin = trans.inverseTransform(bounds.getMinX() + 60, bounds.getMinY() + 60);
-            //localBoundMax = trans.inverseTransform(bounds.getMaxX() - 60, bounds.getMaxY() - 60);
-            localBoundMin = trans.inverseTransform(bounds.getMinX(), bounds.getMinY());
-            localBoundMax = trans.inverseTransform(bounds.getMaxX(), bounds.getMaxY());
+            if (debug) {
+                localBoundMin = trans.inverseTransform(bounds.getMinX() + debugScreenIndent, bounds.getMinY() + debugScreenIndent);
+                localBoundMax = trans.inverseTransform(bounds.getMaxX() - debugScreenIndent, bounds.getMaxY() - debugScreenIndent);
+            } else {
+                localBoundMin = trans.inverseTransform(bounds.getMinX(), bounds.getMinY());
+                localBoundMax = trans.inverseTransform(bounds.getMaxX(), bounds.getMaxY());
+            }
 
             // Get reference points for query in R-tree, where
             drawingBoundMin = new float[]{ (float)localBoundMin.getX(), (float)-localBoundMax.getY() };
@@ -249,7 +257,7 @@ public class Controller implements Initializable {
     void zoom(double dx, double dy, double factor) {
         int MAX_ZOOM_LEVEL = 1_050_000;
         double newMxx = trans.getMxx() * factor;
-        if ((newMxx < (canvas.getHeight() / (model.getMaxLat() - model.getMinLat())) || newMxx > MAX_ZOOM_LEVEL)) {
+        if ((newMxx < (canvas.getHeight() - debugScreenIndent / (model.getMaxLat() - model.getMinLat())) || newMxx > MAX_ZOOM_LEVEL)) {
             return;
         }
 
@@ -268,6 +276,12 @@ public class Controller implements Initializable {
 
     public void setErrorLabelText(String s){
         errorLabel.setText(s);
+    }
+
+    public void setDebug(boolean b) {
+        debug = b;
+        updateCanvasBounds();
+        draw();
     }
 }
 
