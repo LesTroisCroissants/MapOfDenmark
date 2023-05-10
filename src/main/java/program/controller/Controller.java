@@ -248,8 +248,9 @@ public class Controller implements Initializable {
 
     void zoom(double dx, double dy, double factor) {
         int MAX_ZOOM_LEVEL = 1_050_000;
+        double initialCanvasSize = canvas.getHeight() / (model.getMaxLat() - model.getMinLat());
         double newMxx = trans.getMxx() * factor;
-        if ((newMxx < (canvas.getHeight() / (model.getMaxLat() - model.getMinLat())) || newMxx > MAX_ZOOM_LEVEL)) {
+        if (newMxx < initialCanvasSize || newMxx > MAX_ZOOM_LEVEL) {
             return;
         }
 
