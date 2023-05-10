@@ -150,7 +150,6 @@ public class View implements ViewContact {
         textArea.setPrefWidth(400);
 
         boolean isEmpty = true;
-
         for (String poi : poiList) {
             isEmpty = false;
             textArea.appendText(poi);

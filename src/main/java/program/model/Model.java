@@ -186,8 +186,8 @@ public class Model implements ModelContact{
     public void setPOI(String id, String address) {
         // Can keep nearest neighbor on save
         try {
-            MapPoint mapPointAddress = addressSearch(address);
-            poiRegistry.putPOI(id, mapPointAddress);
+            Address parsedAddress = AddressParser.parse(address);
+            poiRegistry.putPOI(id, parsedAddress);
         } catch (AddressParser.InvalidAddressException e) {
             throw e;
         }
@@ -195,17 +195,24 @@ public class Model implements ModelContact{
 
     @Override
     public Iterable<String> getPOIs() {
-        return poiRegistry.getIds();
+        Iterable<String> ids = poiRegistry.getIds();
+        ArrayList<String> pois = new ArrayList<>();
+
+        for (String id : ids) {
+            pois.add(id + " : " + poiRegistry.getPOI(id));
+        }
+
+        return pois;
     }
 
-    public MapPoint checkPOIRegistry(String id) {
-        MapPoint mapPoint = null;
+    public Address checkPOIRegistry(String id) {
+        Address address = null;
         try {
-            mapPoint = (MapPoint) poiRegistry.getPOI(id);
+            address = poiRegistry.getPOI(id);
         } catch (IllegalArgumentException e) {
-            return mapPoint;
+            return address;
         }
-        return mapPoint;
+        return address;
     }
 
     @Override

@@ -4,6 +4,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import program.shared.Address;
 import program.shared.MapElement;
 import program.shared.MapPoint;
 import program.shared.Point;
@@ -18,21 +19,12 @@ class POIRegistryTest {
 
 
     @Test
-    void putPOIMapElement() {
+    void putPOIAddress() {
         String id = "Work";
-        MapPoint point = new MapPoint(new Point(-1,-1), "");
-        poi.putPOI(id,point);
+        Address address = new Address("street", "house-number", "zip-code", "city");
+        poi.putPOI(id, address);
 
-        assertEquals(poi.getPOI("Work").toString(),point.toString());
-    }
-
-    @Test
-    void PutPOIFromCoordinates() {
-        String id = "Work";
-        MapPoint point = new MapPoint(new Point(-1,-1), "");
-        poi.putPOI(id,-1, -1);
-
-        assertEquals(poi.getPOI("Work").toString(),point.toString());
+        assertEquals(poi.getPOI("Work").toString(), address.toString());
     }
 
     @Test
@@ -58,7 +50,7 @@ class POIRegistryTest {
     @Test
      void getInvalidPOI() {
         try{
-            MapElement element = poi.getPOI("Smertestillende");
+            Address element = poi.getPOI("Smertestillende");
             fail();
         }catch(IllegalArgumentException e){
             assertEquals(e.getMessage(),"No point of interest of that name has been set");
@@ -67,8 +59,8 @@ class POIRegistryTest {
 
     @Test
     void connectionBetweenIdAndLocationTest(){
-        for (int i = 0; i < ids.length; i++){
-            assertEquals(i, poi.getPOI(ids[i]).getMaxPoint()[0]);
+        for (String id : ids) {
+            assertEquals(id, poi.getPOI(id).getStreet());
         }
     }
 
@@ -93,11 +85,11 @@ class POIRegistryTest {
      */
     @Test
     void getLocationsTest() {
-        Set<MapElement> mapElements = new HashSet<>();
+        Set<Address> addresses = new HashSet<>();
 
-        for (MapElement mapElement : poi.getLocations()){
-            if (mapElements.contains(mapElement)) fail();
-            else mapElements.add(mapElement);
+        for (Address address : poi.getLocations()){
+            if (addresses.contains(address)) fail();
+            else addresses.add(address);
         }
 
         assertTrue(true);
@@ -109,8 +101,10 @@ class POIRegistryTest {
     void setUp() {
         poi = POIRegistry.getInstance();
 
-        for (int i = 0; i < ids.length; i++)
-            poi.putPOI(ids[i],i,i);
+        for (String id : ids) {
+            Address address = new Address(id, "house-number", "zip-code", "city");
+            poi.putPOI(id, address);
+        }
     }
 
     @AfterEach
