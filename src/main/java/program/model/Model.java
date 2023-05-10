@@ -28,7 +28,6 @@ public class Model implements ModelContact{
         BIKE,
         WALK
     }
-    private MOT modeOfTransport = MOT.CAR;
 
 
     public Model() throws XMLStreamException, IOException, ClassNotFoundException {
@@ -94,7 +93,7 @@ public class Model implements ModelContact{
         var startTime = System.nanoTime();
         Vertex start = storage.nearestVertex(from);
         Vertex end = storage.nearestVertex(to);
-        BiDirectionalDijkstra bididi = new BiDirectionalDijkstra(start, end, modeOfTransport);
+        BiDirectionalDijkstra bididi = new BiDirectionalDijkstra(start, end, settings.getModeOfTransportation());
         plannedRoute = bididi.getPath();
         instructions = bididi.getInstructions();
         System.out.println("route planning time: " + (System.nanoTime()-startTime) / 1_000_000);
@@ -227,7 +226,7 @@ public class Model implements ModelContact{
 
     @Override
     public void setModeOfTransportation(MOT modeOfTransportation) {
-        this.modeOfTransport = modeOfTransportation;
+        settings.setModeOfTransportation(modeOfTransportation);
     }
 
     public List<MapElement> getElementsToDraw() {

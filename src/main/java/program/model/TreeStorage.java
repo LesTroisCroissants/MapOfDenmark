@@ -29,6 +29,9 @@ public class TreeStorage implements Serializable {
     RTree coastline; // Coastlines - drawn to give Denmark it's beautiful shape
     RTree other; // For everything else :)
 
+    /**
+     * Used to describe the level of detail desired
+     */
     public enum detail {
         LOW,
         MEDIUM,
