@@ -146,6 +146,7 @@ public class DataParser{
                                 subType = tagValue;
                                 switch (tagValue){
                                     case "motorway", "trunk" -> {
+                                        subType = "primary"; // quick fix to draw motorways like primary roads
                                         onlyCarAllowed = true;
                                         if (tagValue.equals("motorway")){
                                             speed = 130;
