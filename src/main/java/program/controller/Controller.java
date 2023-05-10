@@ -142,7 +142,7 @@ public class Controller implements Initializable {
                 errorLabel.setText("Command accepted");
                 commandExecutor.executeCommand(textField.getCharacters().toString());
             } catch (CommandParser.IllegalCommandException | IllegalArgumentException | AddressParser.InvalidAddressException e) {
-                errorLabel.setText(ice.getMessage());
+                errorLabel.setText(e.getMessage());
             } catch (Exception e) {
                 errorLabel.setText("An error occurred");
             }
