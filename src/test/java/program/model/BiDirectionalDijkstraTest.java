@@ -94,9 +94,9 @@ class BiDirectionalDijkstraTest {
         Vertex end = model.nearestVertex(endPoint);
         try
         {
-            BiDirectionalDijkstra bididi = new BiDirectionalDijkstra(null, end, CAR);
+            BiDirectionalDijkstra bididi = new BiDirectionalDijkstra(start, end, CAR);
         }catch (IllegalArgumentException e){
-            assertTrue(e.getMessage().equals("Start or end vertex is null"));
+            assertTrue(e.getMessage().equals("No such path exists"));
         }
     }
 /*
