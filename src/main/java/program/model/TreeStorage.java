@@ -58,8 +58,8 @@ public class TreeStorage implements Serializable {
             case HIGH:
                 drawLast.addAll(other.query(min, max));
                 drawLast.addAll(otherRoads.query(min, max));
-                drawLast.addAll(buildings.query(min, max));
             case MEDIUM:
+                drawLast.addAll(buildings.query(min, max));
                 drawLast.addAll(tertiary.query(min, max));
                 drawLast.addAll(secondary.query(min, max));
                 drawLast.addAll(primary.query(min, max));

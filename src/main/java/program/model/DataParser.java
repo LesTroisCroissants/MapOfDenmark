@@ -156,9 +156,9 @@ public class DataParser{
                                     case "residential", "track" -> {
                                         speed = 50;
                                     }
-                                    /*case "service" -> {
+                                    case "service" -> {
                                         speed = 30;
-                                    }*/
+                                    }
                                     case "footway", "path", "cycleway", "bridleway", "steps", "escalator" -> {
                                         carAllowed = false;
                                     }
