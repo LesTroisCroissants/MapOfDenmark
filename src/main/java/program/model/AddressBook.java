@@ -54,9 +54,14 @@ public class AddressBook implements Serializable {
      * @return
      */
     public MapPoint addressSearch(Address address) {
-        Point point = tst.get(address);
-        if (point == null) throw new AddressParser.InvalidAddressException("Invalid address", address.toString());
-        return new MapPoint(point, "address");
+        Map<String, Point> addresses = tst.get(address);
+        if (addresses == null) throw new AddressParser.InvalidAddressException("Invalid address", address.toString());
+
+        for (String a : addresses.keySet()) {
+            if (a.startsWith(address.restOfAddress())) return new MapPoint(addresses.get(a), "address");
+        }
+
+        return new MapPoint(addresses.values().iterator().next(), "address");
     }
 
     /**
@@ -89,12 +94,11 @@ class Trie implements Serializable {
         return node;
     }
 
-    Point get(Address address){
+    Map<String, Point> get(Address address){
         String street = address.getStreet();
-        String restOfAddress = address.getHouse() + " " + address.getCity();
 
         Node node = get(root, street, 0);
-        return node.addresses.getOrDefault(restOfAddress, node.addresses.values().stream().iterator().next());
+        return node.addresses;
     }
 
     Node get(Node node, String query, int depth) {
