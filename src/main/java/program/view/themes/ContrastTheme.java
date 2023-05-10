@@ -3,8 +3,8 @@ package program.view.themes;
 import javafx.scene.paint.Color;
 import program.view.Theme;
 
-public class InvertTheme extends Theme {
-    public InvertTheme(){
+public class ContrastTheme extends Theme {
+    public ContrastTheme(){
         super(Color.web("#00FD3E"),   //primary
                 Color.web("#d8FF00"), //secondary
                 Color.web("#91A659"), //tertiary

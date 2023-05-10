@@ -187,6 +187,7 @@ public class View implements ViewContact {
     }
 
     private void createDirectionsPopup(Iterable<String> directions){
+        if (directions == null) throw new IllegalArgumentException("No route has been planned");
         TextArea textArea = new TextArea();
         textArea.setEditable(false);
         textArea.setWrapText(true);
@@ -257,7 +258,7 @@ public class View implements ViewContact {
         textFlow.getChildren().add(new Text(System.lineSeparator()));
         textFlow.getChildren().add(new Text("!display (!d)"));
         textFlow.getChildren().add(new Text(System.lineSeparator()));
-        textFlow.getChildren().add(new Text("   Changes the visual style of the map to one specified after the command. The available themes are: brook | mint | sakura | verdant"));
+        textFlow.getChildren().add(new Text("   Changes the visual style of the map to one specified after the command. The available themes are: brook | mint | sakura | verdant | contrast"));
         textFlow.getChildren().add(new Text(System.lineSeparator()));
         textFlow.getChildren().add(new Text(System.lineSeparator()));
         textFlow.getChildren().add(new Text("!walk (!w), !bike (!b) and !car (!c)"));
@@ -338,7 +339,7 @@ public class View implements ViewContact {
         textFlow.getChildren().add(new Text("#{FYPMAP} version 1.0"));
         textFlow.getChildren().add(new Text(System.lineSeparator()));
         textFlow.getChildren().add(new Text(System.lineSeparator()));
-        textFlow.getChildren().add(new Text("Designed and developed by Annabell Nørdam, Johan Brandi, Niklas Christensen, Olivier-Baptiste Hansen and Philip Pedersen."));
+        textFlow.getChildren().add(new Text("Designed and developed by Annabell Philip Nørdam, Johan Brandi, Niklas Christensen, Olivier-Baptiste Hansen and Philip Pedersen."));
         textFlow.getChildren().add(new Text(System.lineSeparator()));
         textFlow.getChildren().add(new Text(System.lineSeparator()));
         textFlow.getChildren().add(new Text("This program was developed in context of the course \"First-year Project: Map of Denmark. Visualization, Navigation, Searching, and Route Planning\" in tandem with the course \"Algorithms and Data Structures\" at the IT-University of Copenhagen in 2023."));
