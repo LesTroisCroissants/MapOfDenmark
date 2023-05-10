@@ -23,6 +23,8 @@ public class MapEventHandler {
     private Point2D lastMouseClickPosition;
     private double timeSinceLastMove;
 
+    private String lastSelectedAddress;
+
     public MapEventHandler(Controller controller, ModelContact model) {
         this.controller = controller;
         this.model = model;
@@ -121,8 +123,14 @@ public class MapEventHandler {
                 Point2D mouseToPoint = trans.inverseTransform(lastMouseClickPosition.getX(), lastMouseClickPosition.getY());
                 MapPoint queryPoint = new MapPoint((float) mouseToPoint.getX(), (float) -mouseToPoint.getY(), "");
                 MapRoadSegment nearestRoad = (MapRoadSegment) model.nearestNeighbor(queryPoint);
-                controller.getTextField().setText(controller.getTextField().getText() + nearestRoad.getName());
+                TextField textField = controller.getTextField();
+                clearTextField();
+                controller.getTextField().setText(
+                        textField.getText().equals(lastSelectedAddress) ? nearestRoad.getName() : textField.getText() +
+                                nearestRoad.getName()
+                );
                 controller.getTextField().end();
+                lastSelectedAddress = nearestRoad.getName();
             } catch (NonInvertibleTransformException ex) {
                 throw new RuntimeException(ex);
             }
@@ -134,9 +142,16 @@ public class MapEventHandler {
      */
     private void addCLIRemoveHelpText() {
         controller.getTextField().setOnMousePressed(e -> {
-            TextField textField = (TextField) e.getSource();
-            if (textField.getText().startsWith("Use !help")) textField.setText("");
+            clearTextField();
         });
+    }
+
+    /**
+     * Helper function to clear initial text in CLI textfield
+     */
+    private void clearTextField() {
+        TextField textField = controller.getTextField();
+        if (textField.getText().startsWith("Use !help")) textField.setText("");
     }
 
 }
