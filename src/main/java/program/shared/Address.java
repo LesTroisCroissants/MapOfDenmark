@@ -38,5 +38,5 @@ public class Address {
         return street + " " + house + ", " + postcode + " " + city;
     }
 
-    public String restOfAddress() { return house + ", " + postcode + " " + city; }
+    public String restOfAddress() { return house + (city == null ? "" : " " + city); }
 }
