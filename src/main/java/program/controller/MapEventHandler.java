@@ -2,6 +2,8 @@ package program.controller;
 
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
 import program.model.ModelContact;
@@ -41,6 +43,7 @@ public class MapEventHandler {
         addZoom();
         addShowClosestRoad();
         addClickRoadToShowInCLI();
+        addCLIRemoveHelpText();
     }
 
     /**
@@ -118,10 +121,21 @@ public class MapEventHandler {
                 Point2D mouseToPoint = trans.inverseTransform(lastMouseClickPosition.getX(), lastMouseClickPosition.getY());
                 MapPoint queryPoint = new MapPoint((float) mouseToPoint.getX(), (float) -mouseToPoint.getY(), "");
                 MapRoadSegment nearestRoad = (MapRoadSegment) model.nearestNeighbor(queryPoint);
-                controller.getTextField().setText(nearestRoad.getName());
+                controller.getTextField().setText(controller.getTextField().getText() + nearestRoad.getName());
+                controller.getTextField().end();
             } catch (NonInvertibleTransformException ex) {
                 throw new RuntimeException(ex);
             }
+        });
+    }
+
+    /**
+     * Adds a listener that detects mouseclicks on CLI to remove filler text
+     */
+    private void addCLIRemoveHelpText() {
+        controller.getTextField().setOnMousePressed(e -> {
+            TextField textField = (TextField) e.getSource();
+            if (textField.getText().startsWith("Use !help")) textField.setText("");
         });
     }
 
