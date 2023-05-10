@@ -106,7 +106,7 @@ public class CommandParser {
                 break;
 
             case "!debug":
-                c.setDebug();
+                c.setDebug(id);
                 break;
 
                 case "!load":

@@ -150,8 +150,8 @@ public class Model implements ModelContact{
     }
 
     @Override
-    public void setDebug(boolean debug) {
-        storage.setDebug(debug);
+    public void setDebug(boolean debug, List<String> trees) {
+        storage.setDebug(debug, trees);
     }
 
     public void loadNewFile(String fileName) {

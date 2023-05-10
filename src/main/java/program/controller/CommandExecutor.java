@@ -6,12 +6,14 @@ import program.model.ModelContact;
 import program.shared.MapPoint;
 
 import java.io.File;
+import java.util.Arrays;
 
 import static program.model.Model.MOT;
 public class CommandExecutor {
     Controller controller;
     ModelContact model;
     MapPoint selectedElement;
+    boolean debug = false;
 
     public CommandExecutor(ModelContact model) {
         controller = Controller.getInstance();
@@ -88,12 +90,14 @@ public class CommandExecutor {
         model.setModeOfTransportation(modeOfTransportation);
     }
 
-    public void setDebug() {
-        model.setDebug(true);
+    public void setDebug(String trees) {
+        if (!debug) debug = true;
+        else if (debug && trees.equals("")) debug = false;
+        model.setDebug(debug, Arrays.stream(trees.split(" ")).toList());
         // Use points from view
-        model.setDrawingArea(new float[]{ 0, 0 }, new float[]{ 100, 100 }, 0);
-        model.getElementsToDraw();
-        controller.draw();
+        //model.getElementsToDraw();
+        controller.setDebug(debug);
+        //controller.draw();
     }
 
     public void load() {
