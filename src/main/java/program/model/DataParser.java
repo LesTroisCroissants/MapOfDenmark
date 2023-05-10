@@ -161,6 +161,9 @@ public class DataParser{
                                     case "footway", "path", "cycleway", "bridleway", "steps", "escalator" -> {
                                         carAllowed = false;
                                     }
+                                    case "proposed" -> {
+                                        skipElement = true;
+                                    }
                                 }
                             }
                             case "maxspeed" -> {
