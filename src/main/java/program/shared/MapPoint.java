@@ -7,6 +7,9 @@ import javafx.scene.paint.Color;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Represents a point on the map
+ */
 public class MapPoint extends MapElement {
     private final float[] point;
 

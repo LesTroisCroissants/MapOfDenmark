@@ -1,10 +1,7 @@
 package program.model;
 
 import program.view.*;
-import program.view.themes.BrookTheme;
-import program.view.themes.MintTheme;
-import program.view.themes.SakuraTheme;
-import program.view.themes.VerdantTheme;
+import program.view.themes.*;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -35,6 +32,8 @@ public class Settings implements Serializable {
             theme = new VerdantTheme();
         else if (newTheme.equalsIgnoreCase("brook"))
             theme = new BrookTheme();
+        else if (newTheme.equalsIgnoreCase("invert"))
+            theme = new InvertTheme();
         else
             throw new IllegalArgumentException("Display style does not exist");
     }

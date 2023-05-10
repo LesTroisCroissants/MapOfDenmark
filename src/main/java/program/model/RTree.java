@@ -12,7 +12,6 @@ public class RTree implements Serializable {
     private int minChildren;
     private int maxChildren;
     private boolean debug = false;
-    private int level = 0;
 
     private int elements = 0;
 
@@ -22,12 +21,16 @@ public class RTree implements Serializable {
         this.maxChildren = maxChildren;
     }
 
-    public RTreeNode getRoot() { return root; }
-
+    /**
+     * Inserts MapElement into leaf node
+     * @param element
+     */
     public void insert(MapElement element) {
         elements++;
         RTreeNode node = root;
         Stack<RTreeNode> path = new Stack<>();
+
+        // Find most optimal leaf to insert element into
         while (!node.isLeaf()) {
             path.push(node);
             node = pickChild(node.children, element.getMinPoint(), element.getMaxPoint());
@@ -36,13 +39,13 @@ public class RTree implements Serializable {
         node.addElement(element);
 
         RTreeNode splitNode = null;
-        if (node.elements.size() > node.maxChildren) splitNode = split(node);
+        if (node.getElementsSize() > node.maxChildren) splitNode = split(node);
 
         while (!path.isEmpty()) {
             RTreeNode pathNode = path.pop();
             if (splitNode != null) {
                 pathNode.addChild(splitNode);
-                if (pathNode.children.size() > node.maxChildren) {
+                if (pathNode.getChildrenSize() > node.maxChildren) {
                     splitNode = split(pathNode);
                 } else {
                     splitNode = null;
@@ -55,26 +58,21 @@ public class RTree implements Serializable {
     public List<MapElement> query(float[] min, float[] max) {
         List<MapElement> results = new ArrayList<>();
 
-        int currentLevel = 0;
-
         ArrayDeque<RTreeNode> path = new ArrayDeque<>();
         path.push(root);
         while (!path.isEmpty()) {
             RTreeNode current = path.removeFirst();
-            if (path.peekFirst() == null) {
-                currentLevel++;
-            }
             if (current.isLeaf()) {
-                /*for (MapElement e : current.elements) {
-                    if (hasOverlap(min, max, e.getMinPoint(), e.getMaxPoint())) results.add(e);
-                }*/
-                results.addAll(current.elements);
+               if (current.getElementsSize() > 0) {
+                   results.addAll(current.elements);
+                   /*for (MapElement e : current.elements) {
+                       if (hasOverlap(min, max, e.getMinPoint(), e.getMaxPoint())) results.add(e);
+                   }*/
+                   if (debug) results.add(new MapDebugMBR(current.getMinPoint(), current.getMaxPoint()));
+               }
             } else {
                 for (RTreeNode n : current.children) {
                     if (hasOverlap(min, max, n.getMinPoint(), n.getMaxPoint())) path.addFirst(n);
-                }
-                if (debug && currentLevel > level) {
-                    results.add(new MapDebugMBR(current.getMinPoint(), current.getMaxPoint()));
                 }
             }
         }
@@ -128,14 +126,16 @@ public class RTree implements Serializable {
     }
 
     private <type extends IBoundingBox> Pair<type, type> findCandidates(List<type> nodes) {
-        float maxArea = 0F;
+        float maxArea = -Float.MAX_VALUE;
         type candidate1 = null, candidate2 = null;
         // Find the two elements that create the largest area
         for (int i = 0; i < nodes.size(); i++) {
             type e1 = nodes.get(i);
             for (int j = i + 1; j < nodes.size(); j++) {
                 type e2 = nodes.get(j);
-                float areaIncrease = calculateAreaIncrease(e1.getMinPoint(),
+
+                float areaIncrease = calculateAreaIncrease(
+                        e1.getMinPoint(),
                         e1.getMaxPoint(),
                         e2.getMinPoint(),
                         e2.getMaxPoint());
@@ -146,8 +146,6 @@ public class RTree implements Serializable {
                 }
             }
         }
-        if (candidate1 == null) candidate1 = nodes.get(0);
-        if (candidate2 == null) candidate2 = nodes.get(1);
         return new Pair<>(candidate1, candidate2);
     }
 
@@ -182,9 +180,14 @@ public class RTree implements Serializable {
         return new Pair<>(candidate1Children, candidate2Children);
     }
 
+    /**
+     * Takes RTreeNode and splits its contents into two, using Quadratic Split.
+     * It manipulates the given node and returns the other.
+     * @param node
+     * @return
+     * @param <type>
+     */
     private <type extends IBoundingBox> RTreeNode split(RTreeNode node) {
-        // Change split to exist on insert of node, so that insert can return a node to be inserted
-        // Maybe have node as leaf?
         List<type> nodes = node.isLeaf() ? (ArrayList<type>) node.elements : (ArrayList<type>) node.children;
         RTreeNode newNode = new RTreeNode(maxChildren);
         // Quadratic split finds the two elements that create the most area.
@@ -208,8 +211,8 @@ public class RTree implements Serializable {
         // In case the node is the root node, we create a new root node to change the height of the tree.
         if (node == root) {
             RTreeNode newRoot = new RTreeNode(maxChildren);
-            newRoot.children.add(root);
-            newRoot.children.add(newNode);
+            newRoot.addChild(root);
+            newRoot.addChild(newNode);
             root.updateBoundingBox();
             root = newRoot;
             return null;
@@ -282,7 +285,6 @@ public class RTree implements Serializable {
      */
 
     private RTreeNode pickChild(List<RTreeNode> nodes, float[] childMin, float[] childMax) {
-        List<RTreeNode> validNodes = new ArrayList<>();
         // Find overlapping elements in list
         List<RTreeNode> overlap = new ArrayList<>();
         for (RTreeNode node : nodes) {
@@ -316,11 +318,11 @@ public class RTree implements Serializable {
 
             // If area increase is the same, the best candidate is the one with space for children
             if (newArea == minArea) {
-                if (candidate.children.size() == candidate.maxChildren) {
+                var firstArea = calculateArea(candidate.getMinPoint(), candidate.getMaxPoint());
+                var secondArea = calculateArea(node.getMinPoint(), node.getMaxPoint());
+                if (firstArea == secondArea && candidate.getChildrenSize() == candidate.maxChildren) {
                     candidate = node;
-                } else if (node.children.size() == candidate.maxChildren) {
                 } else {
-                    // If they both have/haven't got space for children, use smallest MBR
                     candidate = calculateArea(candidate.getMinPoint(), candidate.getMaxPoint()) <
                             calculateArea(node.getMinPoint(), node.getMaxPoint()) ? candidate : node;
                 }
@@ -341,18 +343,16 @@ public class RTree implements Serializable {
     }
 
     private float calculateAreaIncrease(float[] currentMin, float[] currentMax, float[] otherMin, float[] otherMax) {
-        float currentArea = (currentMax[0] - currentMin[0]) * (currentMax[1] - currentMin[1]);
+        float currentArea = calculateArea(currentMin, currentMax);
+        float otherArea = calculateArea(otherMin, otherMax);
+
         float newArea = (Math.max(currentMax[0], otherMax[0]) - Math.min(currentMin[0], otherMin[0]))
                 * (Math.max(currentMax[1], otherMax[1]) - Math.min(currentMin[1], otherMin[1]));
-        return newArea - currentArea;
-    }
 
-    public void setDebug(boolean debug, int level) {
-        this.debug = debug;
-        this.level = level;
+        return newArea - currentArea - otherArea;
     }
 
     public void setDebug(boolean debug) {
-        setDebug(debug, 2);
+        this.debug = debug;
     }
 }

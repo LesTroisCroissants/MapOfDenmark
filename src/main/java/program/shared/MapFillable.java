@@ -3,31 +3,10 @@ package program.shared;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
-public class MapFillable extends MapElement {
-    private float[] points;
-    private int count;
+public class MapFillable extends MapShape {
 
     public MapFillable(String type, int size) {
-        super(type);
-        points = new float[size * 2];
-        count = 0;
-    }
-
-    public void add(Point point) {
-        if (point.getX() < minPoint[0]){
-            minPoint[0] = point.getX();
-        } else if (point.getX() > maxPoint[0]) {
-            maxPoint[0] = point.getX();
-        }
-        if (point.getY() < minPoint[1]) {
-            minPoint[1] = point.getY();
-        } else if (point.getY() > maxPoint[1]) {
-            maxPoint[1] = point.getY();
-        }
-        points[count] = point.getX();
-        count++;
-        points[count] = point.getY();
-        count++;
+        super(type, size);
     }
 
     @Override

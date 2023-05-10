@@ -26,11 +26,49 @@ public class BiDirectionalDijkstra {
         if (source == destination) throw new IllegalArgumentException("Identical source and destination");
 
         this.modeOfTransport = modeOfTransport;
+        // if the source or destination starts somewhere that you can't go anywhere from we will return the nearest vertex where it is possible to search from
+        source = handleBadStartForward(source);
+        destination = handleBadStartBackward(destination);
+        if(source == null || destination == null){
+            throw new IllegalArgumentException("No such path exists");
+        }
         initializeDataStructures();
         prepareCurrentShortestPathRelatedFields();
         prepareSourceAndDestination(source, destination);
-
         findPath();
+    }
+
+    private Vertex handleBadStartForward(Vertex current){
+
+        ArrayDeque<Vertex> vertices = new ArrayDeque<>();
+        vertices.add(current);
+        while(!vertices.isEmpty()){
+            current = vertices.remove();
+            for(DirectedEdge directedEdge : current.outEdges){
+                if(skipEdge(directedEdge)){
+                    vertices.add(directedEdge.toVertex());
+                    continue;
+                }
+                return current;
+            }
+        }
+        return null;
+    }
+
+    private Vertex handleBadStartBackward(Vertex current){
+        ArrayDeque<Vertex> vertices = new ArrayDeque<>();
+        vertices.add(current);
+        while(!vertices.isEmpty()){
+            current = vertices.remove();
+            for(DirectedEdge directedEdge : current.inEdges){
+                if(skipEdge(directedEdge)){
+                    vertices.add(directedEdge.fromVertex());
+                    continue;
+                }
+                return current;
+            }
+        }
+        return null;
     }
 
     private void initializeDataStructures(){
@@ -71,9 +109,11 @@ public class BiDirectionalDijkstra {
 
     private void searchForward() {
         Vertex currentVertex = forwardPQ.remove();
-
+        // Set count to 0 every time we look at a new vertex
         for (DirectedEdge directedEdge : currentVertex.outEdges){
-            if(skipEdge(directedEdge)) continue;
+            if(skipEdge(directedEdge)){
+                continue;
+            }
             //Triggers if vertexTo is in the opposite search-space
             if (backwardMarked.contains(directedEdge.toVertex())){
                 evaluatePath(directedEdge);
@@ -86,10 +126,10 @@ public class BiDirectionalDijkstra {
 
     private void searchBackward() {
         Vertex currentVertex = backwardPQ.remove();
-
         for (DirectedEdge directedEdge : currentVertex.inEdges){
-            if(skipEdge(directedEdge)) continue;
-
+            if(skipEdge(directedEdge)){
+                continue;
+            }
             //Triggers if vertexFrom is in the opposite search-space
             if (forwardMarked.contains(directedEdge.fromVertex())){
                 // evaluatePath(directedEdge); // not necessary as we do not wish to evaluate all paths from both directions
@@ -99,7 +139,6 @@ public class BiDirectionalDijkstra {
             }
         }
     }
-
     /**
      * Returns a boolean indicating if an edge is incompatible with the mode of transportation
      */

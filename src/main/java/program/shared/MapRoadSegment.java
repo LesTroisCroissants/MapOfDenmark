@@ -1,11 +1,14 @@
 package program.shared;
 
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
+import program.model.AuxMath;
 import program.model.Vertex;
 
 import java.io.*;
 
+/**
+ * Represents a part of a road from one point (vertex) two another
+ */
 public class MapRoadSegment extends MapElement implements Serializable {
     private final Vertex a;
     private final Vertex b;
@@ -29,14 +32,10 @@ public class MapRoadSegment extends MapElement implements Serializable {
         this.carAllowed = carAllowed;
         this.onlyCarAllowed = onlyCarAllowed;
         this.maxSpeed = maxSpeed;
-        this.distance = calculateDistance(a, b);
+        this.distance = AuxMath.calculateDistance(a, b);
     }
 
-    private float calculateDistance(Vertex vertexFrom, Vertex vertexTo){
-        float xDifference = vertexTo.getX() - vertexFrom.getX();
-        float yDifference = vertexTo.getY() - vertexFrom.getY();
-        return (float) Math.sqrt(Math.pow(xDifference, 2) + Math.pow(yDifference, 2));
-    }
+
 
     @Override
     public void draw(GraphicsContext context) {

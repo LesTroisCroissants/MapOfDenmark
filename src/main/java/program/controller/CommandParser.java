@@ -2,6 +2,9 @@ package program.controller;
 
 import static program.model.Model.MOT.*;
 
+/**
+ * Interprets a command given as a string and calls relevant methods in the CommandExecutor
+ */
 public class CommandParser {
     private static CommandExecutor c;
 
@@ -83,6 +86,7 @@ public class CommandParser {
                 if (!address.equals("") || !id.equals("")) throw new IllegalCommandException("Command !poi does not take any arguments");
                 else c.displayPOIs();
                 break;
+
                 //Settings:
             case "!walk":
             case "!w":
@@ -104,21 +108,22 @@ public class CommandParser {
                 if (!address.equals("")) throw new IllegalCommandException("Command !display does not take an address");
                 else c.setDisplay(id);
                 break;
-
-            case "!debug":
-                c.setDebug();
+            case "!load":
+                c.load();
                 break;
 
-                case "!load":
-                    c.load();
-                    break;
+            case "!debug":
+                c.setDebug(id);
+                break;
 
             default:
                 throw new IllegalCommandException("Command " + toExecute + " is not a legal command");
         }
     }
 
-
+    /**
+     * Thrown when an entered command is not a part of the system or is entered with the wrong arguments
+     */
     public static class IllegalCommandException extends Exception {
         public IllegalCommandException(String message){
             super(message);
