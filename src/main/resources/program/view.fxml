@@ -37,7 +37,7 @@
          </HBox.margin>
       </Label>
     </HBox>
-    <TextField fx:id="textField" alignment="BOTTOM_LEFT" onKeyTyped="#handleKeyTyped" prefWidth="1164.0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.valignment="BOTTOM" GridPane.vgrow="ALWAYS" />
+    <TextField fx:id="textField" text="Use !help to view a list of commands" alignment="BOTTOM_LEFT" onKeyTyped="#handleKeyTyped" prefWidth="1164.0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.valignment="BOTTOM" GridPane.vgrow="ALWAYS" />
     <stylesheets>
         <URL value="@style.css" />
     </stylesheets>
