@@ -9,35 +9,30 @@ import java.util.regex.Pattern;
  * Parses a string and returns an address
  */
 public class AddressParser {
-    private final static Pattern PATTERN = Pattern.compile("^(?<street>[\\d]*\\s*[^,\\d]+)\\s+(?<house>\\d{0,3}[^\\d\\sojqiOJQI,.]?)\\s*,?.*(?<postcode>\\d{4})\\s*(?<city>[^\\d,]+)$");
-    private final static Pattern INCOMPLETEPATTERN = Pattern.compile("^(?<street>[\\d]*\\s*[^,\\d]+)\\s+(?<house>\\d{0,3}[^\\d\\sojqiOJQI,.]?).*$");
-    //private final static Pattern NEWPATTERN = Pattern.compile("^(?<street>[\\d]*\\s*[^,\\d]+)\\s*(?<house>[\\d]{1,3}[^\\d\\sojqiOJQI,.]?)?[\\s]*,?\\s*(?<postcode>[\\d]{4})?\\s*(?<city>\\s+[\\D\\s]*)?$");
+    //private final static Pattern PATTERN = Pattern.compile("^(?<street>[\\d]*\\s*[^,\\d]+)\\s+(?<house>\\d{0,3}[^\\d\\sojqiOJQI,.]?)\\s*,?.*(?<postcode>\\d{4})\\s*(?<city>[^\\d,]+)$");
+    //private final static Pattern INCOMPLETEPATTERN = Pattern.compile("^(?<street>[\\d]*\\s*[^,\\d]+)\\s+(?<house>\\d{0,3}[^\\d\\sojqiOJQI,.]?).*$");
+    //private final static Pattern PATTERN = Pattern.compile("^(?<street>[^,]*[^,\\d]+)\\s*(?<house>\s+[\\d]{1,3}[^\\d\\sojqiOJQI,.]?)?[\\s]*,?\\s*(?<postcode>[\\d]{4})?\\s*(?<city>\\s+[\\D\\s]*)?$");
+    private final static Pattern PATTERN = Pattern.compile("^(?<street>[^,\\d]*)\\s*(?<house>\\d{1,3}[^\\d\\sojqiOJQI,.]?)?,?\\s*(?<postcode>\\d{4})?(?<city>[^,\\d]+)?$");
+
     public static Address parse(String address) {
         if (address.equals("")) throw new InvalidAddressException("Cannot search for address without the address", address);
         Matcher matcher = PATTERN.matcher(address);
-        System.out.println("matcher");
-        if(!matcher.matches()) {
-            matcher = INCOMPLETEPATTERN.matcher(address);
-            if (!matcher.matches())
-                return new Address(
-                        address,
-                        null,
-                        null,
-                        null
-                );
+        if (matcher.matches()) {
+            String street = matcher.group("street");
+            String house = matcher.group("house");
+            String postcode = matcher.group("postcode");
+            String city = matcher.group("city");
+
             return new Address(
-                    matcher.group("street"),
-                    matcher.group("house"),
-                    null,
-                    null
+                street != null ? street.trim() : street,
+                house != null ? house.trim() : house,
+                postcode != null ? postcode.trim() : postcode,
+                city != null ? city.trim() : city
             );
+        } else {
+            throw new InvalidAddressException("Given address is formated incorrectly", address);
         }
-        return new Address(
-                matcher.group("street").trim(),
-                matcher.group("house").trim(),
-                matcher.group("postcode").trim(),
-                matcher.group("city").trim()
-        );
+
     }
 
     public static class InvalidAddressException extends RuntimeException {
