@@ -37,11 +37,11 @@ public class TreeStorage implements Serializable {
 
     public TreeStorage() {
         // Use testing to change these values or take them as parameters
-        int minChildren = 2, maxChildren = 12;
+        int minChildren = 2, maxChildren = 8;
         primary = new RTree(minChildren, maxChildren);
-        secondary = new RTree(minChildren, maxChildren);
-        tertiary = new RTree(minChildren, maxChildren);
-        buildings = new RTree(minChildren, maxChildren);
+        secondary = new RTree(minChildren, 10);
+        tertiary = new RTree(minChildren, 20);
+        buildings = new RTree(minChildren, 20);
         otherRoads = new RTree(minChildren, maxChildren);
         coastline = new RTree(minChildren, maxChildren);
         other = new RTree(minChildren, maxChildren);

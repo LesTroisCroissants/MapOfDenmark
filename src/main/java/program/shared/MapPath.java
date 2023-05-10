@@ -18,12 +18,14 @@ public class MapPath extends MapElement {
     public void add(Point point) {
         if (point.getX() < minPoint[0]){
             minPoint[0] = point.getX();
-        } else if (point.getX() > maxPoint[0]) {
+        }
+        if (point.getX() > maxPoint[0]) {
             maxPoint[0] = point.getX();
         }
         if (point.getY() < minPoint[1]) {
             minPoint[1] = point.getY();
-        } else if (point.getY() > maxPoint[1]) {
+        }
+        if (point.getY() > maxPoint[1]) {
             maxPoint[1] = point.getY();
         }
         points[count] = point.getX();
