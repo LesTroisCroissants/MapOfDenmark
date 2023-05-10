@@ -8,6 +8,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.transform.Affine;
@@ -22,9 +23,7 @@ import program.view.ViewContact;
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class Controller implements Initializable {
 
@@ -69,6 +68,9 @@ public class Controller implements Initializable {
     private boolean debug;
     private int debugScreenIndent = 120;
 
+    private Deque<String> commandHistoryUp;
+    private Deque<String> commandHistoryDown;
+
     public static Controller getInstance(){
         if (instance == null) throw new RuntimeException();
         return instance;
@@ -76,6 +78,8 @@ public class Controller implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        commandHistoryUp = new ArrayDeque<>();
+        commandHistoryDown = new ArrayDeque<>();
         instance = this;
         view = View.getInstance();
         initializeCanvas();
@@ -131,6 +135,8 @@ public class Controller implements Initializable {
         if (keyEvent.getCharacter().equals("" + (char)13)){ // 13 is the ascii character for carriage-return, and it is being cast to char and then String
             try {
                 errorLabel.setText("Command accepted");
+                resetHistory();
+                commandHistoryUp.addFirst(textField.getText());
                 commandExecutor.executeCommand(textField.getCharacters().toString());
             } catch (CommandParser.IllegalCommandException | IllegalArgumentException ice) {
                 errorLabel.setText(ice.getMessage());
@@ -277,6 +283,31 @@ public class Controller implements Initializable {
 
     public void setErrorLabelText(String s){
         errorLabel.setText(s);
+    }
+
+    /**
+     * Used to navigate the command history
+     */
+    public void navigateHistoryUp() {
+        if (commandHistoryUp.isEmpty()) return;
+        String lastUp = commandHistoryUp.pollFirst();
+        textField.setText(lastUp);
+        textField.end();
+        commandHistoryDown.addFirst(lastUp);
+    }
+
+    public void navigateHistoryDown() {
+        if (commandHistoryDown.isEmpty()) return;
+        String lastDown = commandHistoryDown.pollFirst();
+        textField.setText(lastDown);
+        textField.end();
+        commandHistoryUp.addFirst(lastDown);
+    }
+
+    private void resetHistory() {
+        while (!commandHistoryDown.isEmpty()) {
+            commandHistoryUp.addFirst(commandHistoryDown.pollFirst());
+        }
     }
 
     public void setDebug(boolean b) {

@@ -3,6 +3,8 @@ package program.controller;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
@@ -46,6 +48,7 @@ public class MapEventHandler {
         addShowClosestRoad();
         addClickRoadToShowInCLI();
         addCLIRemoveHelpText();
+        addHistoryControls();
     }
 
     /**
@@ -153,6 +156,19 @@ public class MapEventHandler {
     private void clearTextField() {
         TextField textField = controller.getTextField();
         if (textField.getText().startsWith("Use !help")) textField.setText("");
+    }
+
+    /**
+     * Used to navigate command history to access previous commands
+     */
+    private void addHistoryControls() {
+        controller.getTextField().setOnKeyPressed((KeyEvent e) -> {
+            if (e.getCode() == KeyCode.UP) {
+                controller.navigateHistoryUp();
+            } else if (e.getCode() == KeyCode.DOWN) {
+                controller.navigateHistoryDown();
+            }
+        });
     }
 
 }
