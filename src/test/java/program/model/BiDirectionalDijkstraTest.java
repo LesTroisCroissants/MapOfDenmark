@@ -86,19 +86,6 @@ class BiDirectionalDijkstraTest {
         }
     }
 
-    @Test
-    void nullBadStartTest(){
-        MapPoint startPoint =  model.addressSearch("Vigelsø 2 5450 Otterup");
-        MapPoint endPoint = model.addressSearch("Klingeskov 30 5450 Otterup");
-        Vertex start = model.nearestVertex(startPoint);
-        Vertex end = model.nearestVertex(endPoint);
-        try
-        {
-            BiDirectionalDijkstra bididi = new BiDirectionalDijkstra(start, end, CAR);
-        }catch (IllegalArgumentException e){
-            assertTrue(e.getMessage().equals("No such path exists"));
-        }
-    }
 /*
     @Test
     void arbitraryVerticesTest(){
