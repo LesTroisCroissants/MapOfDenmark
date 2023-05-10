@@ -10,12 +10,13 @@ import java.util.regex.Pattern;
  */
 public class AddressParser {
     private final static Pattern PATTERN = Pattern.compile("^(?<street>[\\d]*\\s*[^,\\d]+)\\s+(?<house>\\d{0,3}[^\\d\\sojqiOJQI,.]?)\\s*,?.*(?<postcode>\\d{4})\\s*(?<city>[^\\d,]+)$");
-    //private final static Pattern INCOMPLETEPATTERN = Pattern.compile("^(?<street>[\\d]*\\s*[^,\\d]+)\\s+(?<house>\\d{0,3}[^\\d\\sojqiOJQI,.]?).*$");
+    private final static Pattern INCOMPLETEPATTERN = Pattern.compile("^(?<street>[\\d]*\\s*[^,\\d]+)\\s+(?<house>\\d{0,3}[^\\d\\sojqiOJQI,.]?).*$");
     //private final static Pattern NEWPATTERN = Pattern.compile("^(?<street>[\\d]*\\s*[^,\\d]+)\\s*(?<house>[\\d]{1,3}[^\\d\\sojqiOJQI,.]?)?[\\s]*,?\\s*(?<postcode>[\\d]{4})?\\s*(?<city>\\s+[\\D\\s]*)?$");
     public static Address parse(String address) {
         if (address.equals("")) throw new InvalidAddressException("Cannot search for address without the address", address);
         Matcher matcher = PATTERN.matcher(address);
-        /*if(!matcher.matches()) {
+        System.out.println("matcher");
+        if(!matcher.matches()) {
             matcher = INCOMPLETEPATTERN.matcher(address);
             if (!matcher.matches())
                 return new Address(
@@ -30,7 +31,7 @@ public class AddressParser {
                     null,
                     null
             );
-        }*/
+        }
         return new Address(
                 matcher.group("street").trim(),
                 matcher.group("house").trim(),
