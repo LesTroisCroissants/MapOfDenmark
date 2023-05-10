@@ -4,6 +4,9 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 
+/**
+ * Class for debugging purposes in relation to the R-tree
+ */
 public class MapDebugMBR extends MapElement {
     public MapDebugMBR (float[] min, float[] max) {
         super("MBR");
