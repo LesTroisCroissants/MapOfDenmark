@@ -32,8 +32,8 @@ public class Settings implements Serializable {
             theme = new VerdantTheme();
         else if (newTheme.equalsIgnoreCase("brook"))
             theme = new BrookTheme();
-        else if (newTheme.equalsIgnoreCase("invert"))
-            theme = new InvertTheme();
+        else if (newTheme.equalsIgnoreCase("contrast"))
+            theme = new ContrastTheme();
         else
             throw new IllegalArgumentException("Display style does not exist");
     }

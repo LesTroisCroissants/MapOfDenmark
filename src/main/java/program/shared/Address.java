@@ -35,7 +35,10 @@ public class Address {
     }
 
     public String toString() {
-        return street + " " + house + ", " + postcode + " " + city;
+        return street + " " +
+                (house == null ? "" : house + ", ") +
+                (postcode == null ? "" : postcode) + " " +
+                (city == null ? "" : city);
     }
 
     public String restOfAddress() { return house + ", " + postcode + " " + city; }
