@@ -10,16 +10,16 @@ import java.io.*;
 import java.util.*;
 import java.util.zip.ZipInputStream;
 
+/**
+ * Returns an RTree (TreeStorage) with MapElements created from an input file
+ */
 public class DataParser{
-    // * Take an input file
-    // * Create MapElements and insert them in RTree
-    // * Returns an RTree
 
     private static AddressBook addressBook;
     private static TreeStorage treeStorage;
     private static List<DirectedEdge> edges;
 
-    public static TreeStorage parse(String fileName, AddressBook _addressBook, List<DirectedEdge> _edges) throws IOException, XMLStreamException, ClassNotFoundException {
+    public static TreeStorage parse(String fileName, AddressBook _addressBook, List<DirectedEdge> _edges) throws IOException, XMLStreamException {
         treeStorage = new TreeStorage();
         edges = _edges;
         addressBook = _addressBook;
@@ -61,7 +61,7 @@ public class DataParser{
             if (tagKind == XMLStreamConstants.START_ELEMENT) {
                 String tag = input.getLocalName();
                 switch (tag) {
-                    case "node" -> {
+                    case "node" -> { //create node with lat lon and id
                         var id = Long.parseLong(input.getAttributeValue(null, "id"));
                         var lat = Float.parseFloat(input.getAttributeValue(null, "lat"));
                         var lon = Float.parseFloat(input.getAttributeValue(null, "lon"));
@@ -69,7 +69,7 @@ public class DataParser{
                         currentNode = new Point(0.56F * lon, lat, id);
                         nodes.add(currentNode);
                     }
-                    case "tag" -> {
+                    case "tag" -> { //save address if applicable
                         var tagKey = input.getAttributeValue(null, "k");
                         if (tagKey.startsWith("addr")) {
                             var tagValue = input.getAttributeValue(null, "v");
@@ -84,14 +84,14 @@ public class DataParser{
                             }
                         }
                     }
-                    case "bounds" -> {
+                    case "bounds" -> { //set max and min lon and lat values
                         float minLat = Float.parseFloat(input.getAttributeValue(null, "minlat"));
                         float maxLat = Float.parseFloat(input.getAttributeValue(null, "maxlat"));
                         float minLon = Float.parseFloat(input.getAttributeValue(null, "minlon"));
                         float maxLon = Float.parseFloat(input.getAttributeValue(null, "maxlon"));
                         treeStorage.setMapArea(minLat, minLon, maxLat, maxLon);
                     }
-                    case "way" -> readingNodes = false;
+                    case "way" -> readingNodes = false; //the change to next way is made at the end of the next section to accommodate for this one also being registered
                 }
             } else if (tagKind == XMLStreamConstants.END_ELEMENT) {
                 String tag = input.getLocalName();
@@ -221,7 +221,6 @@ public class DataParser{
                                     subType = "building";
                                 }
                             }
-                            // Todo: Add other map elements to draw here
                         }
                         if (isRoad && tagKey.equals("name")) {
                             roadName = tagValue.intern();
@@ -272,7 +271,11 @@ public class DataParser{
         input.close();
     }
 
-    // O(lg2(n))
+    /**
+     * Performs a binary search in the list of nodes
+     * @param nodeId key to search for
+     * @return array index for the searched node
+     */
     private static int findNodeIndex(long nodeId) {
         int low = 0;
         int high = nodes.size() - 1;
@@ -287,6 +290,12 @@ public class DataParser{
         return -1;
     }
 
+    /**
+     * Creates a MapPath
+     * @param ids ids for the nodes of the MapPath
+     * @param type the type of the MapElement
+     * @return the created MapPath
+     */
     private static MapPath createPath(List<Long> ids, String type) {
         MapPath path = new MapPath(type, ids.size());
         for (Long id : ids){
@@ -296,6 +305,12 @@ public class DataParser{
         return path;
     }
 
+    /**
+     * Creates a MapFillable
+     * @param ids ids for the nodes of the MapFillable
+     * @param type the type of the MapElement
+     * @return the created MapFillable object
+     */
     private static MapFillable createFillable(List<Long> ids, String type) {
         MapFillable fillable = new MapFillable(type, ids.size());
         for (Long id : ids){
@@ -305,31 +320,34 @@ public class DataParser{
         return fillable;
     }
 
+    /**
+     * Creates a MapRoadSegment and associated DirectedEdge objects
+     * @param a start vertex
+     * @param b end vertex
+     * @param name the name of the road
+     * @param subType the type of road
+     * @param speed the speed limit
+     * @param oneway true if this is a one-way street
+     * @param carAllowed true if traversal by car is permitted
+     * @param onlyCarAllowed true if traversal by other means than car are prohibited
+     * @return returns the created MapRoadSegment
+     */
     private static MapRoadSegment createSegment(Vertex a, Vertex b, String name, String subType, int speed, boolean oneway, boolean carAllowed, boolean onlyCarAllowed) {
         MapRoadSegment segment = new MapRoadSegment(a, b, name, subType, speed, carAllowed, onlyCarAllowed);
-
         float carWeight = segment.getDistance()/speed;
 
-        DirectedEdge forward = new DirectedEdge(a, b, carWeight, segment);
-        edges.add(forward);
-        a.addOutEdge(forward);
-        b.addInEdge(forward);
-
-        DirectedEdge backward;
-        if (oneway) {
-            backward = new DirectedEdge(b, a, Float.POSITIVE_INFINITY, segment);
-        } else {
-            backward = new DirectedEdge(b, a, carWeight, segment);
-        }
-        edges.add(backward);
-        a.addInEdge(backward);
-        b.addOutEdge(backward);
+        addEdge(new DirectedEdge(a,b, carWeight, segment));
+        if (oneway)
+            addEdge(new DirectedEdge(b, a, Float.POSITIVE_INFINITY, segment));
+        else
+            addEdge(new DirectedEdge(b, a, carWeight, segment));
 
         return segment;
     }
-    /*
-        Parser: læse fil og oversætte til kode / objekter | Skal den indsætte data?
-        Storage: opbevare data og håndtere at indsætte og hente data
-    */
 
+    private static void addEdge(DirectedEdge directedEdge){
+        edges.add(directedEdge);
+        directedEdge.fromVertex().addOutEdge(directedEdge);
+        directedEdge.toVertex().addInEdge(directedEdge);
+    }
 }

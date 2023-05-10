@@ -12,6 +12,8 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
+import program.model.AddressBuilder;
+import program.model.AddressParser;
 import program.model.Model;
 import program.model.ModelContact;
 import program.shared.MapElement;
@@ -139,7 +141,7 @@ public class Controller implements Initializable {
             try {
                 errorLabel.setText("Command accepted");
                 commandExecutor.executeCommand(textField.getCharacters().toString());
-            } catch (CommandParser.IllegalCommandException | IllegalArgumentException ice) {
+            } catch (CommandParser.IllegalCommandException | IllegalArgumentException | AddressParser.InvalidAddressException e) {
                 errorLabel.setText(ice.getMessage());
             } catch (Exception e) {
                 errorLabel.setText("An error occurred");

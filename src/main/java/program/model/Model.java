@@ -20,7 +20,7 @@ public class Model implements ModelContact{
     private List<MapRoadSegment> plannedRoute;
     private Iterable<String> instructions;
 
-    private MapPoint middlePoint;
+    private MapPoint middlePoint; //used for panning after route planning
 
 
     public enum MOT{
@@ -43,6 +43,11 @@ public class Model implements ModelContact{
         settings = new Settings();
     }
 
+    /**
+     * Writes a .obj file based on the opened file
+     * @param fileName name of the file to be saved
+     * @throws IOException
+     */
     private void save(String fileName) throws IOException {
         try(ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(fileName))) {
             out.writeObject(storage);
@@ -51,6 +56,13 @@ public class Model implements ModelContact{
         }
     }
 
+    /**
+     * Opens a file; either .obj or .osm (.osm.zip)
+     * @param fileName
+     * @throws IOException
+     * @throws XMLStreamException
+     * @throws ClassNotFoundException
+     */
     private void open(String fileName) throws IOException, XMLStreamException, ClassNotFoundException {
         addressBook.clear();
         edges.clear();
@@ -78,6 +90,9 @@ public class Model implements ModelContact{
         }
     }
 
+    /**
+     * Sets the elements to draw by queriyng the data storage
+     */
     public void setDrawingArea(float[] p1, float[] p2, int zoomLevel) {
         TreeStorage.detail detail;
         // Find detail from zoomLevel
@@ -85,10 +100,14 @@ public class Model implements ModelContact{
         else if (zoomLevel >= 2500 && zoomLevel < 10000) detail = TreeStorage.detail.MEDIUM;
         else detail = TreeStorage.detail.HIGH;
 
-        // detail = DataStorage.detail.MEDIUM;
         elementsToDraw = storage.query(p1, p2, detail);
     }
 
+    /**
+     * Runs a bidirectional dijkstra to determine the shortest path
+     * @param from start destination
+     * @param to end destination
+     */
     public void planRoute(MapPoint from, MapPoint to) {
         var startTime = System.nanoTime();
         Vertex start = storage.nearestVertex(from);
@@ -98,31 +117,44 @@ public class Model implements ModelContact{
         instructions = bididi.getInstructions();
         System.out.println("route planning time: " + (System.nanoTime()-startTime) / 1_000_000);
 
-        setMiddlePoint(calculateMiddlePoint(from.getMaxPoint(),to.getMaxPoint()));
+        middlePoint = AuxMath.calculateMiddlePoint(from.getMaxPoint(),to.getMaxPoint());
     }
 
-    private void setMiddlePoint(MapPoint middlePoint) {
-        this.middlePoint = middlePoint;
-    }
-
+    /**
+     * Returns the middle point of a currently planned route
+     */
     public MapPoint getMiddlePoint() {
         return middlePoint;
     }
 
+    /**
+     * Ensures there is no current planned route
+     */
     public void clearRoute() {
         if (plannedRoute != null) plannedRoute.clear();
     }
 
+    /**
+     * Returns the current planned route
+     */
     @Override
     public List<MapRoadSegment> getPlannedRoute() {
         return plannedRoute;
     }
 
+    /**
+     * Returns instructions for a planned route
+     */
     @Override
     public Iterable<String> getInstructions() {
         return instructions;
     }
 
+    /**
+     * Searches the data for the MapRoadSegment closest to a given point
+     * @param q MapPoint for the query location
+     * @return MapRoadSegment closest to the query point
+     */
     @Override
     public MapRoadSegment nearestNeighbor(MapPoint q) {
         return storage.nearestNeighbor(q);
@@ -153,25 +185,30 @@ public class Model implements ModelContact{
         storage.setDebug(debug, trees);
     }
 
+    /**
+     * Opens a new file during the runtime of the program
+     * @param fileName path to the file to be loaded
+     */
     public void loadNewFile(String fileName) {
         try {
             open(fileName);
         } catch (IOException | XMLStreamException | ClassNotFoundException e) {
-            e.printStackTrace();
+            throw new IllegalArgumentException("Unable to load file");
         }
     }
 
-    private MapPoint calculateMiddlePoint(float[] from, float[] to){
-        return new MapPoint((to[0] - from[0])/2 + from[0],  (to[1] - from[1])/2 + from[1], "");
-    }
 
+    /**
+     * Retrieves an address from the address book and returns its MapPoint
+     * @param address String representation of the address
+     * @return MapPoint indicating the location of the address
+     */
     @Override
     public MapPoint addressSearch(String address) {
-        // When searching, should pan to MapElement / point on map if not in view.
         AddressBook addressBook = AddressBook.getInstance();
         /*
             We want to return a MapElement, as it will contain coordinates of the given address
-            This will allow the view to draw ontop of the element to indicate location
+            This will allow the view to draw on top of the element to indicate location
             As well as pan to the element.
 
          */
@@ -181,54 +218,71 @@ public class Model implements ModelContact{
         return point;
     }
 
+
+    /**
+     * Adds an address as a POI under a given ID
+     * @param id key for later retrieval of the address
+     * @param address string representation of the address
+     */
     @Override
     public void setPOI(String id, String address) {
-        // Can keep nearest neighbor on save
-        try {
-            Address parsedAddress = AddressParser.parse(address);
-            poiRegistry.putPOI(id, parsedAddress);
-        } catch (AddressParser.InvalidAddressException e) {
-            throw e;
-        }
+        Address parsedAddress = AddressParser.parse(address);
+        poiRegistry.putPOI(id, parsedAddress);
     }
 
+    /**
+     * Returns all IDs for POIs
+     * @return Iterable of IDs
+     */
     @Override
     public Iterable<String> getPOIs() {
-        Iterable<String> ids = poiRegistry.getIds();
-        ArrayList<String> pois = new ArrayList<>();
-
-        for (String id : ids) {
-            pois.add(id + " : " + poiRegistry.getPOI(id));
-        }
-
-        return pois;
+        return poiRegistry.getIds();
     }
 
+    /**
+     * Returns the address of a given ID or null if there are no matches
+     * @param id string to check
+     * @return null if there are no POIs with the ID
+     */
     public Address checkPOIRegistry(String id) {
-        Address address = null;
+        Address address;
         try {
             address = poiRegistry.getPOI(id);
         } catch (IllegalArgumentException e) {
-            return address;
+            return null;
         }
         return address;
     }
 
+    /**
+     * Sets the theme to a new one
+     * @param theme theme to be changed to
+     */
     @Override
     public void setTheme(String theme) {
         settings.setTheme(theme);
     }
 
+    /**
+     * Returns the currently set theme
+     */
     @Override
     public Theme getTheme() {
         return settings.getTheme();
     }
 
+    /**
+     * Sets the mode of transportation
+     * @param modeOfTransportation mode of transportation to change to
+     */
     @Override
     public void setModeOfTransportation(MOT modeOfTransportation) {
         settings.setModeOfTransportation(modeOfTransportation);
     }
 
+    /**
+     * Returns a list of the currently set elements to draw
+     */
     public List<MapElement> getElementsToDraw() {
         return elementsToDraw;
     }

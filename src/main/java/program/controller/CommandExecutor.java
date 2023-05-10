@@ -154,8 +154,8 @@ public class CommandExecutor {
         fileChooser.setInitialDirectory(new File("src/main/data"));
         File selectedFile = fileChooser.showOpenDialog(new Stage());
         model.loadNewFile(selectedFile.getAbsolutePath());
-        controller.setErrorLabelText("loaded file: " + selectedFile.getName());
         controller.initView();
         controller.draw();
+        controller.setErrorLabelText("loaded file: " + selectedFile.getName());
     }
 }
