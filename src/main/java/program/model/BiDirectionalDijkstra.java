@@ -29,6 +29,7 @@ public class BiDirectionalDijkstra {
         // if the source or destination starts somewhere that you can't go anywhere from we will return the nearest vertex where it is possible to search from
         source = handleBadStartForward(source);
         destination = handleBadStartBackward(destination);
+
         if(source == null || destination == null){
             throw new IllegalArgumentException("No such path exists");
         }
@@ -39,14 +40,17 @@ public class BiDirectionalDijkstra {
     }
 
     private Vertex handleBadStartForward(Vertex current){
-
+        HashSet<Vertex> visited = new HashSet<>();
         ArrayDeque<Vertex> vertices = new ArrayDeque<>();
         vertices.add(current);
         while(!vertices.isEmpty()){
             current = vertices.remove();
             for(DirectedEdge directedEdge : current.outEdges){
                 if(skipEdge(directedEdge)){
-                    vertices.add(directedEdge.toVertex());
+                    if(!visited.contains(directedEdge.toVertex())){
+                        vertices.add(directedEdge.toVertex());
+                        visited.add(directedEdge.toVertex());
+                    }
                     continue;
                 }
                 return current;
@@ -56,13 +60,17 @@ public class BiDirectionalDijkstra {
     }
 
     private Vertex handleBadStartBackward(Vertex current){
+        HashSet<Vertex> visited = new HashSet<>();
         ArrayDeque<Vertex> vertices = new ArrayDeque<>();
         vertices.add(current);
         while(!vertices.isEmpty()){
             current = vertices.remove();
             for(DirectedEdge directedEdge : current.inEdges){
                 if(skipEdge(directedEdge)){
-                    vertices.add(directedEdge.fromVertex());
+                    if(!visited.contains(directedEdge.fromVertex())){
+                        vertices.add(directedEdge.fromVertex());
+                        visited.add(directedEdge.fromVertex());
+                    }
                     continue;
                 }
                 return current;
@@ -308,7 +316,7 @@ public class BiDirectionalDijkstra {
         String DIRECTION_LEFT = "Turn left onto";
         String DIRECTION_STRAIGHT = "Continue on";
         String DIRECTION_U_TURN = "Make a U-turn";
-        
+
 
         float angle = (float) Math.toDegrees(Math.acos(
                 AuxMath.dotProduct(comingFrom, goingTo) / (comingFrom.getMapRoadSegment().getDistance() * goingTo.getMapRoadSegment().getDistance())
