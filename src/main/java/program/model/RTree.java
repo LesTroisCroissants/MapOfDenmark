@@ -63,11 +63,11 @@ public class RTree implements Serializable {
         while (!path.isEmpty()) {
             RTreeNode current = path.removeFirst();
             if (current.isLeaf()) {
-                /*for (MapElement e : current.elements) {
-                    if (hasOverlap(min, max, e.getMinPoint(), e.getMaxPoint())) results.add(e);
-                }*/
                if (current.getElementsSize() > 0) {
                    results.addAll(current.elements);
+                   /*for (MapElement e : current.elements) {
+                       if (hasOverlap(min, max, e.getMinPoint(), e.getMaxPoint())) results.add(e);
+                   }*/
                    if (debug) results.add(new MapDebugMBR(current.getMinPoint(), current.getMaxPoint()));
                }
             } else {
@@ -126,14 +126,16 @@ public class RTree implements Serializable {
     }
 
     private <type extends IBoundingBox> Pair<type, type> findCandidates(List<type> nodes) {
-        float maxArea = Float.MIN_VALUE;
+        float maxArea = -Float.MAX_VALUE;
         type candidate1 = null, candidate2 = null;
         // Find the two elements that create the largest area
         for (int i = 0; i < nodes.size(); i++) {
             type e1 = nodes.get(i);
             for (int j = i + 1; j < nodes.size(); j++) {
                 type e2 = nodes.get(j);
-                float areaIncrease = calculateAreaIncrease(e1.getMinPoint(),
+
+                float areaIncrease = calculateAreaIncrease(
+                        e1.getMinPoint(),
                         e1.getMaxPoint(),
                         e2.getMinPoint(),
                         e2.getMaxPoint());
@@ -316,12 +318,11 @@ public class RTree implements Serializable {
 
             // If area increase is the same, the best candidate is the one with space for children
             if (newArea == minArea) {
-                if (candidate.getChildrenSize() == candidate.maxChildren) {
+                var firstArea = calculateArea(candidate.getMinPoint(), candidate.getMaxPoint());
+                var secondArea = calculateArea(node.getMinPoint(), node.getMaxPoint());
+                if (firstArea == secondArea && candidate.getChildrenSize() == candidate.maxChildren) {
                     candidate = node;
-                } else if (node.getChildrenSize() == candidate.maxChildren) {
-
                 } else {
-                    // If they both have/haven't got space for children, use smallest MBR
                     candidate = calculateArea(candidate.getMinPoint(), candidate.getMaxPoint()) <
                             calculateArea(node.getMinPoint(), node.getMaxPoint()) ? candidate : node;
                 }
@@ -342,10 +343,12 @@ public class RTree implements Serializable {
     }
 
     private float calculateAreaIncrease(float[] currentMin, float[] currentMax, float[] otherMin, float[] otherMax) {
-        float currentArea = (currentMax[0] - currentMin[0]) * (currentMax[1] - currentMin[1]);
-        float otherArea = (otherMax[0] - otherMin[0]) * (otherMax[1] - otherMin[1]);
+        float currentArea = calculateArea(currentMin, currentMax);
+        float otherArea = calculateArea(otherMin, otherMax);
+
         float newArea = (Math.max(currentMax[0], otherMax[0]) - Math.min(currentMin[0], otherMin[0]))
                 * (Math.max(currentMax[1], otherMax[1]) - Math.min(currentMin[1], otherMin[1]));
+
         return newArea - currentArea - otherArea;
     }
 

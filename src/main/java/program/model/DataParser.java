@@ -141,9 +141,10 @@ public class DataParser{
 
                         switch (tagKey) {
                             case "highway" -> {
-                                isRoad = true;
                                 type = tagKey;
                                 subType = tagValue;
+                                if (subType.equals("service")) break;
+                                isRoad = true;
                                 switch (tagValue){
                                     case "motorway", "trunk" -> {
                                         onlyCarAllowed = true;
@@ -154,9 +155,9 @@ public class DataParser{
                                     case "residential", "track" -> {
                                         speed = 50;
                                     }
-                                    case "service" -> {
+                                    /*case "service" -> {
                                         speed = 30;
-                                    }
+                                    }*/
                                     case "footway", "path", "cycleway", "bridleway", "steps", "escalator" -> {
                                         carAllowed = false;
                                     }
