@@ -125,10 +125,11 @@ public class MapEventHandler {
                 MapRoadSegment nearestRoad = (MapRoadSegment) model.nearestNeighbor(queryPoint);
                 TextField textField = controller.getTextField();
                 clearTextField();
-                controller.getTextField().setText(
-                        textField.getText().equals(lastSelectedAddress) ? nearestRoad.getName() : textField.getText() +
-                                nearestRoad.getName()
-                );
+                if (lastSelectedAddress != null && textField.getText().contains(lastSelectedAddress)) {
+                    textField.setText(textField.getText().replace(lastSelectedAddress, nearestRoad.getName()));
+                } else {
+                    controller.getTextField().setText(textField.getText() + nearestRoad.getName());
+                }
                 controller.getTextField().end();
                 lastSelectedAddress = nearestRoad.getName();
             } catch (NonInvertibleTransformException ex) {
