@@ -35,7 +35,7 @@ public class Model implements ModelContact{
         addressBook = AddressBook.getInstance();
         edges = new ArrayList<>();
 
-        String toOpen = "src/main/data/storkbh.zip";
+        String toOpen = "src/main/data/fyn.osm.zip.obj";
         open(toOpen);
 
         poiRegistry = POIRegistry.getInstance();
@@ -100,6 +100,7 @@ public class Model implements ModelContact{
         System.out.println("route planning time: " + (System.nanoTime()-startTime) / 1_000_000);
 
         setMiddlePoint(calculateMiddlePoint(from.getMaxPoint(),to.getMaxPoint()));
+        System.out.println("length of route: " + bididi.getPathLength());
     }
 
     private void setMiddlePoint(MapPoint middlePoint) {
@@ -214,7 +215,9 @@ public class Model implements ModelContact{
         }
         return address;
     }
-
+    public Vertex nearestVertex(MapPoint q) {
+        return storage.nearestVertex(q);
+    }
     @Override
     public void setTheme(String theme) {
         settings.setTheme(theme);

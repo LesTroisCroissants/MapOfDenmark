@@ -143,7 +143,7 @@ public class DataParser{
                             case "highway" -> {
                                 type = tagKey;
                                 subType = tagValue;
-                                if (subType.equals("service")) break;
+                                //if (subType.equals("service")) break;
                                 isRoad = true;
                                 switch (tagValue){
                                     case "motorway", "trunk" -> {

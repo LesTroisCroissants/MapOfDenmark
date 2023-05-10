@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -22,20 +23,22 @@ class BiDirectionalDijkstraTest {
     List<MapRoadSegment> mapRoadSegments;
     Model model;
 
+
     @Test
     void shortestPathTest(){
         ArrayList<String> expected = new ArrayList<>(
                 List.of(new String[]{
-                        "Turn right onto Kongesvinget",
-                        "Turn right onto Blomsterhaven",
-                        "Turn right onto Skebjergvej",
-                        "Turn right onto Blomsterhaven",
-                        "Turn right onto Krokushaven"
+                        "Turn left onto Troels Alle",
+                        "Turn left onto Lindøalleen",
+                        "Turn right onto Moseskovvej",
+                        "Turn right onto Solbakken",
+                        "Turn right onto Munkebjergvej",
+                        "Continue on Gamle Havnekaj"
                 })
         );
 
-        MapPoint from = model.addressSearch("Kongehaven");
-        MapPoint to = model.addressSearch("Krokushaven");
+        MapPoint from = model.addressSearch("Fjordvej 56, 5330 Munkebo");
+        MapPoint to = model.addressSearch("Bycentret 205, 5330 Munkebo");
         model.planRoute(from, to);
         Iterable<String> route = model.getInstructions();
 
@@ -45,14 +48,30 @@ class BiDirectionalDijkstraTest {
             if(instruction.equals(expected.get(count))) correctAmount++;
             count++;
         }
-        assertEquals(correctAmount, 5);
+        assertEquals(correctAmount, expected.size());
     }
 
     @Test
     void blockedCarPathTest(){
-        
+        MapPoint startPoint =  model.addressSearch("Sydstranden 68, 5300 Kerteminde");
+        MapPoint endPoint = model.addressSearch("Albanigade 21A, st th, 5000 Odense");
+       Vertex start = model.nearestVertex(startPoint);
+       Vertex end = model.nearestVertex(endPoint);
+       BiDirectionalDijkstra bididi = new BiDirectionalDijkstra(start, end, CAR);
+       float correctLength = 0.0029433654F;
+       assertEquals(bididi.currentShortestPathLength, correctLength);
     }
 
+    @Test
+    void footPathTest(){
+        MapPoint startPoint =  model.addressSearch("Jollehavnen 2 5300 Kerteminde");
+        MapPoint endPoint = model.addressSearch("Sydstranden 68, 5300 Kerteminde");
+        Vertex start = model.nearestVertex(startPoint);
+        Vertex end = model.nearestVertex(endPoint);
+        BiDirectionalDijkstra bididi = new BiDirectionalDijkstra(start, end, WALK);
+        float correctLength = 0.0051203435F;
+        assertEquals(bididi.currentShortestPathLength, correctLength);
+    }
 /*
     @Test
     void arbitraryVerticesTest(){
