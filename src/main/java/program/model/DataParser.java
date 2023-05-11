@@ -226,10 +226,6 @@ public class DataParser{
                             roadName = tagValue.intern();
                         }
                     }
-                    case "relation" -> {
-                        input.close();
-                        return;
-                    }
                 }
             } else if (tagKind == XMLStreamConstants.END_ELEMENT) {
                 String tag = input.getLocalName();

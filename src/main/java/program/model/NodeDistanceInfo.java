@@ -1,5 +1,9 @@
 package program.model;
 
+/**
+ * Object to contain information; used during nearest neighbour queries
+ * @param <type>
+ */
 public class NodeDistanceInfo<type extends IBoundingBox> implements Comparable<NodeDistanceInfo<type>> {
     float minDist;
     float minMaxDist;
