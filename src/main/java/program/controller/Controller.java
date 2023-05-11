@@ -22,9 +22,7 @@ import program.view.ViewContact;
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class Controller implements Initializable {
 
@@ -32,7 +30,6 @@ public class Controller implements Initializable {
     private ViewContact view;
     private ModelContact model;
     private CommandExecutor commandExecutor;
-    private MapEventHandler mapEventHandler;
 
 
     @FXML
@@ -69,6 +66,8 @@ public class Controller implements Initializable {
     private boolean debug;
     private int debugScreenIndent = 120;
 
+    private CommandHistory commandHistory;
+
     public static Controller getInstance(){
         if (instance == null) throw new RuntimeException();
         return instance;
@@ -78,12 +77,14 @@ public class Controller implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         instance = this;
         view = View.getInstance();
+        commandHistory = CommandHistory.getInstance();
         initializeCanvas();
         initializeGridpane();
         trans = new Affine();
 
         zoomValue = 0;
         focusedElements = new ArrayList<>();
+
 
         // Handle Exceptions some day lol
         try {
@@ -92,7 +93,7 @@ public class Controller implements Initializable {
             throw new RuntimeException(e);
         }
         commandExecutor = new CommandExecutor(model);
-        mapEventHandler = new MapEventHandler(this, model);
+        new MapEventHandler(this, model);
 
         initView();
     }
@@ -131,6 +132,7 @@ public class Controller implements Initializable {
         if (keyEvent.getCharacter().equals("" + (char)13)){ // 13 is the ascii character for carriage-return, and it is being cast to char and then String
             try {
                 errorLabel.setText("Command accepted");
+                commandHistory.add(textField.getText());
                 commandExecutor.executeCommand(textField.getCharacters().toString());
             } catch (CommandParser.IllegalCommandException | IllegalArgumentException ice) {
                 errorLabel.setText(ice.getMessage());
@@ -277,6 +279,27 @@ public class Controller implements Initializable {
 
     public void setErrorLabelText(String s){
         errorLabel.setText(s);
+    }
+
+    /**
+     * Used to navigate the command history
+     */
+    public void navigateHistoryUp() {
+        try {
+            textField.setText(commandHistory.getNext());
+        } catch (Exception e) {
+            setErrorLabelText(e.getMessage());
+        }
+        textField.end();
+    }
+
+    public void navigateHistoryDown() {
+        try {
+            textField.setText(commandHistory.getPrevious());
+        } catch (Exception e) {
+            setErrorLabelText(e.getMessage());
+        }
+        textField.end();
     }
 
     public void setDebug(boolean b) {

@@ -285,6 +285,10 @@ public class BiDirectionalDijkstra {
         return segments;
     }
 
+    public float getPathLength(){
+        return  currentShortestPathLength;
+    }
+
     /**
      * Returns an Iterable<String> containing all instructions for the found path
      * @return

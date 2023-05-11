@@ -214,7 +214,9 @@ public class Model implements ModelContact{
         }
         return address;
     }
-
+    public Vertex nearestVertex(MapPoint q) {
+        return storage.nearestVertex(q);
+    }
     @Override
     public void setTheme(String theme) {
         settings.setTheme(theme);
