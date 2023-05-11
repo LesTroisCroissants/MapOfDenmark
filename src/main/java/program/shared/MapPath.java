@@ -5,6 +5,9 @@ import javafx.scene.canvas.GraphicsContext;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * MapShape intended to be drawn as connected points
+ */
 public class MapPath extends MapShape {
 
     public MapPath(String type, int size) {
@@ -13,9 +16,6 @@ public class MapPath extends MapShape {
 
     @Override
     public void draw(GraphicsContext context) {
-        /*context.strokeRect(minPoint.getX(), -maxPoint.getY(),
-                maxPoint.getX() - minPoint.getX(),
-                maxPoint.getY() - minPoint.getY());*/
         context.moveTo(points[0], -points[1]);
         context.beginPath();
         for (int i = 2; i < points.length; i += 2){

@@ -1,7 +1,7 @@
 package program.model;
 
 import program.shared.MapRoadSegment;
-import static program.model.Model.MOT.*;
+import static program.model.Model.MOT;
 
 import java.util.*;
 
@@ -10,36 +10,41 @@ import java.util.*;
  */
 
 public class BiDirectionalDijkstra {
-    private HashMap<Vertex, DirectedEdge> previousEdge;
-    private PriorityQueue<Vertex> forwardPQ;
-    private PriorityQueue<Vertex> backwardPQ;
-    private HashSet<Vertex> forwardMarked;
-    private HashSet<Vertex> backwardMarked;
+    private HashMap<Vertex, DirectedEdge> previousEdge; //Mapping from a vertex to its in edge used in its shortest path from the source
+    private PriorityQueue<Vertex> forwardPQ; //Vertices to be explored by the forward search
+    private PriorityQueue<Vertex> backwardPQ; //Vertices to be explored by the backward search
+    private HashSet<Vertex> forwardMarked; //Vertices already seen by the forward search
+    private HashSet<Vertex> backwardMarked; //Vertices already seen by the backward search
 
-    private Vertex shortestForward;
-    private Vertex shortestBackward;
-    public float currentShortestPathLength;
-    private Deque<DirectedEdge> edgePath;
-    private final Model.MOT modeOfTransport;
+    private Vertex shortestForward; //Forward meeting vertex of the shortest route found so far
+    private Vertex shortestBackward; //Backward meeting vertex of the shortest route found so far
+    private float currentShortestPathLength;
+    private Deque<DirectedEdge> edgePath; //Used to store the edges of the shortest path
+    private final MOT modeOfTransport; //The mode of transportation used for the search
 
-    public BiDirectionalDijkstra(Vertex source, Vertex destination, Model.MOT modeOfTransport){
+    public BiDirectionalDijkstra(Vertex source, Vertex destination, MOT modeOfTransport){
         if (source == destination) throw new IllegalArgumentException("Identical source and destination");
 
         this.modeOfTransport = modeOfTransport;
-        // if the source or destination starts somewhere that you can't go anywhere from we will return the nearest vertex where it is possible to search from
-        source = handleBadStartForward(source);
-        destination = handleBadStartBackward(destination);
 
-        if(source == null || destination == null){
-            throw new IllegalArgumentException("No such path exists");
-        }
+        // makes sure that the search does not start from a vertex only connected to edges which are intraversable for current MOT
+        source = findStartVertex(source);
+        destination = findEndVertex(destination);
+        if(source == null || destination == null) throw new IllegalArgumentException("No such path exists");
+
         initializeDataStructures();
         prepareCurrentShortestPathRelatedFields();
         prepareSourceAndDestination(source, destination);
+
         findPath();
     }
 
-    private Vertex handleBadStartForward(Vertex current){
+    /**
+     *
+     * @param current source vertex
+     * @return vertex to use as start point
+     */
+    private Vertex findStartVertex(Vertex current){
         HashSet<Vertex> visited = new HashSet<>();
         ArrayDeque<Vertex> vertices = new ArrayDeque<>();
         vertices.add(current);
@@ -59,7 +64,7 @@ public class BiDirectionalDijkstra {
         return null;
     }
 
-    private Vertex handleBadStartBackward(Vertex current){
+    private Vertex findEndVertex(Vertex current){
         HashSet<Vertex> visited = new HashSet<>();
         ArrayDeque<Vertex> vertices = new ArrayDeque<>();
         vertices.add(current);
@@ -117,7 +122,6 @@ public class BiDirectionalDijkstra {
 
     private void searchForward() {
         Vertex currentVertex = forwardPQ.remove();
-        // Set count to 0 every time we look at a new vertex
         for (DirectedEdge directedEdge : currentVertex.outEdges){
             if(skipEdge(directedEdge)){
                 continue;
@@ -127,7 +131,7 @@ public class BiDirectionalDijkstra {
                 evaluatePath(directedEdge);
             }
             else {
-                relaxForward(directedEdge);
+                relax(directedEdge, directedEdge.toVertex(), directedEdge.fromVertex(), forwardPQ, forwardMarked);
             }
         }
     }
@@ -143,7 +147,7 @@ public class BiDirectionalDijkstra {
                 // evaluatePath(directedEdge); // not necessary as we do not wish to evaluate all paths from both directions
             }
             else {
-                relaxBackward(directedEdge);
+                relax(directedEdge, directedEdge.fromVertex(), directedEdge.toVertex(), backwardPQ, backwardMarked);
             }
         }
     }
@@ -151,10 +155,10 @@ public class BiDirectionalDijkstra {
      * Returns a boolean indicating if an edge is incompatible with the mode of transportation
      */
     private boolean skipEdge(DirectedEdge directedEdge){
-        if(modeOfTransport == CAR){
+        if(modeOfTransport == MOT.CAR){
             return !directedEdge.getMapRoadSegment().isCarAllowed();
         }
-        if(modeOfTransport == BIKE || modeOfTransport == WALK){
+        if(modeOfTransport == MOT.BIKE || modeOfTransport == MOT.WALK){
             return directedEdge.getMapRoadSegment().isOnlyCarAllowed();
         }
         return false;
@@ -177,57 +181,28 @@ public class BiDirectionalDijkstra {
         }
     }
 
-    private void relaxForward(DirectedEdge edge) {
+    private void relax(DirectedEdge edge, Vertex vertexTo, Vertex vertexFrom, PriorityQueue<Vertex> pq, Set<Vertex> marked) {
         float edgeWeight = edge.weight(modeOfTransport);
-        Vertex vertexTo = edge.toVertex();
-        Vertex vertexFrom = edge.fromVertex();
-
-        //Triggers if the vertexTo has been explored as part of this search space before otherwise ignores the vertex since it might have values from a previous search
-        if (forwardMarked.contains(vertexTo)){
-            if(vertexFrom.distTo + edgeWeight < vertexTo.distTo){
-                forwardPQ.remove(vertexTo); // Remove old element to update and insert again
+        //Triggers if the vertexTo has been explored as part of this search space before; otherwise ignores the vertex since it might have values from a previous search
+        if (marked.contains(vertexTo)){
+            if (vertexFrom.distTo + edgeWeight < vertexTo.distTo){
+                pq.remove(vertexTo); //Remove old element reinsert it with updated weight
                 vertexTo.distTo = vertexFrom.distTo + edgeWeight;
                 previousEdge.put(vertexTo, edge);
-                forwardPQ.add(vertexTo);
+                pq.add(vertexTo);
             }
         }
         //Triggers if the vertexTo has yet to be explored altogether in this search
         else {
             vertexTo.distTo = vertexFrom.distTo + edgeWeight;
             previousEdge.put(vertexTo, edge);
-            forwardMarked.add(vertexTo);
-            forwardPQ.add(vertexTo);
-        }
-    }
-
-    private void relaxBackward(DirectedEdge edge){
-        float edgeWeight = edge.weight(modeOfTransport);
-
-        // the vertices are switched as the backward-search goes backwards
-        Vertex vertexTo = edge.fromVertex();
-        Vertex vertexFrom = edge.toVertex();
-
-        //Triggers if the vertexTo has been explored as part of this search space before otherwise ignores the vertex since it might have values from a previous search
-        if (backwardMarked.contains(vertexTo)){
-            if(vertexFrom.distTo + edgeWeight < vertexTo.distTo){
-                backwardPQ.remove(vertexTo); // Remove old element to update and insert again
-                vertexTo.distTo = vertexFrom.distTo + edgeWeight;
-                previousEdge.put(vertexTo, edge);
-                backwardPQ.add(vertexTo);
-            }
-        }
-        //Triggers if the vertexTo has yet to be explored altogether in this search
-        else {
-            vertexTo.distTo = vertexFrom.distTo + edgeWeight;
-            previousEdge.put(vertexTo, edge);
-            backwardMarked.add(vertexTo);
-            backwardPQ.add(vertexTo);
+            marked.add(vertexTo);
+            pq.add(vertexTo);
         }
     }
 
     /**
      * Returns true if it remains possible to potentially find a shorter path
-     * @return
      */
     private boolean shorterPathPossible(){
         if (forwardPQ.isEmpty() || backwardPQ.isEmpty()) return false;
@@ -241,10 +216,9 @@ public class BiDirectionalDijkstra {
 
     /**
      * Returns the edge common to the shortestForward and shortestBackward
-     * @return
      */
     private DirectedEdge getBridge() {
-        DirectedEdge bridge = shortestForward.outEdges.iterator().next();
+        DirectedEdge bridge = shortestForward.outEdges.get(0);
         for (DirectedEdge edgeCandidate : shortestForward.outEdges)
             if (edgeCandidate.toVertex() == shortestBackward) {
                 bridge = edgeCandidate;
@@ -285,65 +259,26 @@ public class BiDirectionalDijkstra {
         return segments;
     }
 
-    public float getPathLength(){
+    private float getPathLength(){
         return  currentShortestPathLength;
     }
 
     /**
      * Returns an Iterable<String> containing all instructions for the found path
-     * @return
      */
     public Iterable<String> getInstructions(){
         ArrayList<String> instructions = new ArrayList<>();
 
-        DirectedEdge previous = null;
+        DirectedEdge previous = edgePath.peek();
         for (DirectedEdge edge : edgePath){
-            if (previous == null){
-                previous = edge;
-                continue;
-            }
-
-            String previousRoadName = previous.getMapRoadSegment().getName(); // In need of memory, remove this as variable:)
+            String previousRoadName = previous.getMapRoadSegment().getName();
             String currentRoadName = edge.getMapRoadSegment().getName();
 
-            if(!currentRoadName.equals(previousRoadName)) {
-                instructions.add(getDirection(previous, edge) + " " + currentRoadName);
+            if(!currentRoadName.equals(previousRoadName)) { //Will always be skipped for first element
+                instructions.add(AuxMath.getDirection(previous, edge) + " " + currentRoadName);
             }
-
             previous = edge;
         }
         return instructions;
-    }
-
-    private String getDirection(DirectedEdge comingFrom, DirectedEdge goingTo){
-        String DIRECTION_RIGHT = "Turn right onto";
-        String DIRECTION_LEFT = "Turn left onto";
-        String DIRECTION_STRAIGHT = "Continue on";
-        String DIRECTION_U_TURN = "Make a U-turn";
-
-
-        float angle = (float) Math.toDegrees(Math.acos(
-                AuxMath.dotProduct(comingFrom, goingTo) / (comingFrom.getMapRoadSegment().getDistance() * goingTo.getMapRoadSegment().getDistance())
-        ));
-
-        // if the angle is < 20 degrees: straight
-        // more than 160 degrees: U-turn
-        // else cross product to determine left/right
-
-        if (angle <= 20 || angle >= 160){
-            if (angle <= 20){
-                return DIRECTION_STRAIGHT;
-            } else {
-                return DIRECTION_U_TURN;
-            }
-        }
-
-        float crossProduct = AuxMath.lengthOfCrossProductVector(comingFrom, goingTo);
-
-        if (crossProduct > 0){
-            return DIRECTION_LEFT;
-        } else {
-            return DIRECTION_RIGHT;
-        }
     }
 }
