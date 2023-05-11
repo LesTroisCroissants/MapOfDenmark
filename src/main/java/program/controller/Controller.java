@@ -8,7 +8,6 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.transform.Affine;
@@ -31,7 +30,6 @@ public class Controller implements Initializable {
     private ViewContact view;
     private ModelContact model;
     private CommandExecutor commandExecutor;
-    private MapEventHandler mapEventHandler;
 
 
     @FXML
@@ -68,8 +66,7 @@ public class Controller implements Initializable {
     private boolean debug;
     private int debugScreenIndent = 120;
 
-    private Deque<String> commandHistoryUp;
-    private Deque<String> commandHistoryDown;
+    private CommandHistory commandHistory;
 
     public static Controller getInstance(){
         if (instance == null) throw new RuntimeException();
@@ -78,16 +75,16 @@ public class Controller implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        commandHistoryUp = new ArrayDeque<>();
-        commandHistoryDown = new ArrayDeque<>();
         instance = this;
         view = View.getInstance();
+        commandHistory = CommandHistory.getInstance();
         initializeCanvas();
         initializeGridpane();
         trans = new Affine();
 
         zoomValue = 0;
         focusedElements = new ArrayList<>();
+
 
         // Handle Exceptions some day lol
         try {
@@ -96,7 +93,7 @@ public class Controller implements Initializable {
             throw new RuntimeException(e);
         }
         commandExecutor = new CommandExecutor(model);
-        mapEventHandler = new MapEventHandler(this, model);
+        new MapEventHandler(this, model);
 
         initView();
     }
@@ -135,8 +132,7 @@ public class Controller implements Initializable {
         if (keyEvent.getCharacter().equals("" + (char)13)){ // 13 is the ascii character for carriage-return, and it is being cast to char and then String
             try {
                 errorLabel.setText("Command accepted");
-                resetHistory();
-                commandHistoryUp.addFirst(textField.getText());
+                commandHistory.add(textField.getText());
                 commandExecutor.executeCommand(textField.getCharacters().toString());
             } catch (CommandParser.IllegalCommandException | IllegalArgumentException ice) {
                 errorLabel.setText(ice.getMessage());
@@ -289,25 +285,21 @@ public class Controller implements Initializable {
      * Used to navigate the command history
      */
     public void navigateHistoryUp() {
-        if (commandHistoryUp.isEmpty()) return;
-        String lastUp = commandHistoryUp.pollFirst();
-        textField.setText(lastUp);
+        try {
+            textField.setText(commandHistory.getNext());
+        } catch (Exception e) {
+            setErrorLabelText(e.getMessage());
+        }
         textField.end();
-        commandHistoryDown.addFirst(lastUp);
     }
 
     public void navigateHistoryDown() {
-        if (commandHistoryDown.isEmpty()) return;
-        String lastDown = commandHistoryDown.pollFirst();
-        textField.setText(lastDown);
-        textField.end();
-        commandHistoryUp.addFirst(lastDown);
-    }
-
-    private void resetHistory() {
-        while (!commandHistoryDown.isEmpty()) {
-            commandHistoryUp.addFirst(commandHistoryDown.pollFirst());
+        try {
+            textField.setText(commandHistory.getPrevious());
+        } catch (Exception e) {
+            setErrorLabelText(e.getMessage());
         }
+        textField.end();
     }
 
     public void setDebug(boolean b) {
