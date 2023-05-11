@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class POIRegistryTest {
     POIRegistry poi;
-    String[] ids = {"Lasagne", "Lagkage","Legomand","Loppegift", "Æble"};
+    String[] ids = {"lasagne", "lagkage","legomand","loppegift", "æble"};
 
 
     @Test

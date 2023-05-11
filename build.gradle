@@ -48,26 +48,33 @@ jacocoTestCoverageVerification {
     }
 }
 
-tasks.named('test') {
-    // Use JUnit Platform for unit tests.
-    useJUnitPlatform()
-}
 
 // TODO run config with X gb of ram
 tasks.withType(JavaExec).configureEach {
     jvmArgs = ['-Xms512m', '-Xmx10240m']
 }
 
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+tasks.named('test') {
+    // Use JUnit Platform for unit tests.
+    useJUnitPlatform()
+}
+
+tasks.withType(Test).configureEach {
+    systemProperty 'file.encoding', 'UTF-8'
+}
+
+tasks.withType(JavaExec).configureEach {
+    systemProperty 'file.encoding', 'UTF-8'
+}
+
 javafx {
     version = "19"
     modules = ['javafx.controls', 'javafx.fxml']
 }
-
-/*jar {
-    manifest {
-        attributes 'Main-Class': 'program.App'
-    }
-}*/
 
 compileJava.options.encoding = 'UTF-8'
 

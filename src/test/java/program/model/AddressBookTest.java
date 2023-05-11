@@ -36,8 +36,8 @@ class AddressBookTest {
 
     @Test
     void autocompleteTest(){
-        MapPoint mp = addressBook.addressSearch(new Address("Te", null, null, null));
-        assertEquals("0.0 0.0", mp.toString());
+        MapPoint mp = addressBook.addressSearch(new Address("K", null, null, null));
+        assertEquals("1.0 1.0", mp.toString());
     }
 
     @Test
@@ -48,7 +48,7 @@ class AddressBookTest {
 
     //Fails
     @Test
-void retrieveSpecificHouseNumberFromIncompleteQueryTest(){
+    void retrieveSpecificHouseNumberFromIncompleteQueryTest(){
         MapPoint mp = addressBook.addressSearch(new Address("Testvej", "11", null, null));
         assertEquals("2.0 2.0", mp.toString());
     }
