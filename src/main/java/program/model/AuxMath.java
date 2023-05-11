@@ -5,11 +5,6 @@ import program.shared.Point;
 
 public class AuxMath {
     public static float pointToRoadDistance(float[] p, MapRoadSegment road) {
-        /*float lineSlope = getSlope(road.getVertexA(), road.getVertexB());
-        float lineIntercept = getLineIntercept(road.getVertexA(), lineSlope);
-        float pointOnLine = Math.abs(lineSlope * p[0 + lineIntercept - p[1);
-        return pointOnLine / (float) (Math.sqrt(Math.pow(lineSlope, 2) + 1));*/
-
         /*
          * Source for math used
          *  https://stackoverflow.com/questions/849211/shortest-distance-between-a-point-and-a-line-segment
@@ -43,8 +38,8 @@ public class AuxMath {
             yy = p1.getY() + param * D;
         }
 
-        var dx = p[0] - xx;
-        var dy = p[1] - yy;
+        float dx = p[0] - xx;
+        float dy = p[1] - yy;
         return (float) Math.sqrt(dx * dx + dy * dy);
     }
 
