@@ -286,20 +286,23 @@ public class Controller implements Initializable {
     }
 
     /**
-     * Used to navigate the command history
+     * Sets the text field with records from the command history
      */
     public void navigateHistoryUp() {
         try {
-            textField.setText(commandHistory.getNext());
+            textField.setText(commandHistory.getNext(textField.getCharacters().toString()));
         } catch (Exception e) {
             setErrorLabelText(e.getMessage());
         }
         textField.end();
     }
 
+    /**
+     * Sets the text field with records from the command history
+     */
     public void navigateHistoryDown() {
         try {
-            textField.setText(commandHistory.getPrevious());
+            textField.setText(commandHistory.getPrevious(textField.getCharacters().toString()));
         } catch (Exception e) {
             setErrorLabelText(e.getMessage());
         }

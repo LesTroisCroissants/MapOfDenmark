@@ -4,8 +4,8 @@ import java.util.*;
 
 
 public class CommandHistory {
-    private Deque<String> commandHistoryUp;
-    private Deque<String> commandHistoryDown;
+    private Deque<String> commandHistoryUp; //Used as a stack
+    private Deque<String> commandHistoryDown; //Used as a stack
 
     private static CommandHistory instance;
 
@@ -32,12 +32,18 @@ public class CommandHistory {
     }
 
     /**
-     *
-     * @return
+     * Returns the next command in the history (that is the command that was entered before the one currently displayed)
+     * @return command as String
      */
-    public String getNext() {
+    public String getNext(String current) {
         try {
             String lastUp = commandHistoryUp.removeFirst();
+
+            while (lastUp.equals(current)) {
+                commandHistoryDown.addFirst(lastUp);
+                lastUp = commandHistoryUp.removeFirst();
+            }
+
             commandHistoryDown.addFirst(lastUp);
             return lastUp;
         } catch (NoSuchElementException e) {
@@ -45,10 +51,20 @@ public class CommandHistory {
         }
     }
 
-    public String getPrevious() {
+    /**
+     * Returns the previous command in the history (that is the command that was entered prior to the one currently displayed)
+     * @return command as String
+     */
+    public String getPrevious(String current) {
         try {
             String lastDown = commandHistoryDown.removeFirst();
-            commandHistoryUp.addFirst(lastDown);
+
+            while (lastDown.equals(current)) {
+                commandHistoryUp.addFirst(lastDown);
+                lastDown = commandHistoryDown.removeFirst();
+            }
+
+            commandHistoryDown.addFirst(lastDown);
             return lastDown;
         } catch (NoSuchElementException e) {
             throw new RuntimeException("No previous command");
