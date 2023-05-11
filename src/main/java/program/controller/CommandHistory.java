@@ -19,6 +19,10 @@ public class CommandHistory {
         commandHistoryDown = new ArrayDeque<>();
     }
 
+    /**
+     * Reestablishes order in history and adds new command
+     * @param command command to be added
+     */
     public void add(String command) {
         if (command.equals("")) return;
         while (!commandHistoryDown.isEmpty()) {
@@ -27,6 +31,10 @@ public class CommandHistory {
         commandHistoryUp.addFirst(command);
     }
 
+    /**
+     *
+     * @return
+     */
     public String getNext() {
         try {
             String lastUp = commandHistoryUp.removeFirst();

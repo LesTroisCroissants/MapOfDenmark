@@ -27,7 +27,7 @@ public class TreeStorage implements Serializable {
     // Shapes
     RTree buildings; // Buildings - allows for hiding buildings until zoomed far in fx.
     RTree coastline; // Coastlines - drawn to give Denmark it's beautiful shape
-    RTree other; // For everything else :)
+    RTree other; // For everything else
 
     /**
      * Used to describe the level of detail desired
@@ -39,18 +39,14 @@ public class TreeStorage implements Serializable {
     }
 
     public TreeStorage() {
-        // Use testing to change these values or take them as parameters
-        int minChildren = 2, maxChildren = 8;
-        primary = new RTree(minChildren, maxChildren);
-        secondary = new RTree(minChildren, 10);
-        tertiary = new RTree(minChildren, 20);
-        buildings = new RTree(minChildren, 20);
-        otherRoads = new RTree(minChildren, maxChildren);
-        coastline = new RTree(minChildren, maxChildren);
-        other = new RTree(minChildren, maxChildren);
-
-        // Use debug value to decide whether to draw debugging MBRs
-        // TODO: implement this
+        int maxChildren = 8;
+        primary = new RTree(maxChildren);
+        secondary = new RTree(10);
+        tertiary = new RTree(20);
+        buildings = new RTree(20);
+        otherRoads = new RTree(maxChildren);
+        coastline = new RTree(maxChildren);
+        other = new RTree(maxChildren);
     }
 
     public List<MapElement> query(float[] min, float[] max, detail detail) {
@@ -79,7 +75,7 @@ public class TreeStorage implements Serializable {
     }
 
     public MapRoadSegment nearestNeighbor(MapPoint q) {
-        var start = System.nanoTime();
+        //var start = System.nanoTime();
         List<MapRoadSegment> nearestSegments = new ArrayList<>();
         // Add from all road trees
         nearestSegments.add((MapRoadSegment) primary.findNearestNeighbor(q));
@@ -87,7 +83,7 @@ public class TreeStorage implements Serializable {
         nearestSegments.add((MapRoadSegment) tertiary.findNearestNeighbor(q));
         nearestSegments.add((MapRoadSegment) otherRoads.findNearestNeighbor(q));
 
-        MapRoadSegment nnRoad = null; // TODO: maybe give this another name?
+        MapRoadSegment nnRoad = null;
         float nnDist = Float.POSITIVE_INFINITY;
 
         PriorityQueue<NodeDistanceInfo<MapRoadSegment>> nearestNodes = new PriorityQueue<>();
@@ -99,7 +95,6 @@ public class TreeStorage implements Serializable {
 
             float distToLine = AuxMath.pointToRoadDistance(q.getMinPoint(), curr.node);
             if (distToLine < nnDist) {
-                //nn = curr; Seperately we need to find closest vertex in final element
                 nnRoad = curr.node;
                 nnDist = distToLine;
             }
@@ -113,8 +108,8 @@ public class TreeStorage implements Serializable {
     public Vertex nearestVertex(MapPoint point) {
         float[] p = point.getMinPoint();
         MapRoadSegment road = nearestNeighbor(point);
-        float distA = (float) Math.pow(p[1] - road.getVertexA().getY(), 2) + (float) Math.pow(p[0] - road.getVertexA().getX(), 2);
-        float distB = (float) Math.pow(p[1] - road.getVertexB().getY(), 2) + (float) Math.pow(p[0] - road.getVertexB().getX(), 2);
+        float distA = AuxMath.calculateDistance(road.getVertexA(), new Vertex(p[0], p[1]));
+        float distB = AuxMath.calculateDistance(road.getVertexB(), new Vertex(p[0], p[1]));
         return distA < distB ? road.getVertexA() : road.getVertexB();
     }
 

@@ -9,14 +9,12 @@ import java.util.*;
 public class RTree implements Serializable {
     RTreeNode root;
 
-    private int minChildren;
     private int maxChildren;
     private boolean debug = false;
 
 
-    public RTree(int minChildren, int maxChildren) {
+    public RTree(int maxChildren) {
         root = new RTreeNode(maxChildren);
-        this.minChildren = minChildren;
         this.maxChildren = maxChildren;
     }
 
