@@ -35,37 +35,29 @@ public class CommandHistory {
      * Returns the next command in the history (that is the command that was entered before the one currently displayed)
      * @return command as String
      */
-    public String getNext(String current) {
-        try {
-            String lastUp = commandHistoryUp.removeFirst();
-
-            while (lastUp.equals(current)) {
-                commandHistoryDown.addFirst(lastUp);
-                lastUp = commandHistoryUp.removeFirst();
-            }
-
-            commandHistoryDown.addFirst(lastUp);
-            return lastUp;
-        } catch (NoSuchElementException e) {
-            throw new RuntimeException("No previous command");
-        }
+    public String getNext(String current){
+        return get(current, commandHistoryUp, commandHistoryDown);
     }
 
     /**
      * Returns the previous command in the history (that is the command that was entered prior to the one currently displayed)
      * @return command as String
      */
-    public String getPrevious(String current) {
+    public String getPrevious(String current){
+        return get(current, commandHistoryDown, commandHistoryUp);
+    }
+
+    private String get(String current, Deque<String> mainHistory, Deque<String> otherHistory){
         try {
-            String lastDown = commandHistoryDown.removeFirst();
+            String last = mainHistory.removeFirst();
+            if (last.equals(current))
+                otherHistory.addFirst(last);
 
-            while (lastDown.equals(current)) {
-                commandHistoryUp.addFirst(lastDown);
-                lastDown = commandHistoryDown.removeFirst();
-            }
+            while (last.equals(current))
+                last = mainHistory.removeFirst();
 
-            commandHistoryDown.addFirst(lastDown);
-            return lastDown;
+            otherHistory.addFirst(last);
+            return last;
         } catch (NoSuchElementException e) {
             throw new RuntimeException("No previous command");
         }
