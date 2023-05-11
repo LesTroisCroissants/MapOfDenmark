@@ -89,7 +89,7 @@ public class RTree implements Serializable {
      * @param point A MapPoint consisting of an x-coordinate and y-coordinate.
      * @return Under the current implementation, it will always return a MapRoadSegment
      */
-    public MapElement findNearestNeighbor(MapPoint point) {
+    public MapRoadSegment findNearestNeighbor(MapPoint point) {
         float[] q = point.getMinPoint();
         PriorityQueue<NodeDistanceInfo<RTreeNode>> nearestNodes = new PriorityQueue<>();
         NodeDistanceInfo<RTreeNode> mmd = null;
@@ -127,7 +127,7 @@ public class RTree implements Serializable {
                 }
             }
         }
-        return nearestNeighbor;
+        return (MapRoadSegment) nearestNeighbor;
     }
 
     /**
