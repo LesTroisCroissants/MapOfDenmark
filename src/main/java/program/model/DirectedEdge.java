@@ -42,6 +42,9 @@ public class DirectedEdge implements Serializable {
         };
     }
 
+    /**
+     * Returns the MapRoadSegment associated with this edge
+     */
     public MapRoadSegment getMapRoadSegment(){
         return mapRoadSegment;
     }

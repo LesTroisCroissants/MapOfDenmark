@@ -13,7 +13,6 @@ public class RTree implements Serializable {
     private int maxChildren;
     private boolean debug = false;
 
-    private int elements = 0;
 
     public RTree(int minChildren, int maxChildren) {
         root = new RTreeNode(maxChildren);
@@ -26,7 +25,6 @@ public class RTree implements Serializable {
      * @param element
      */
     public void insert(MapElement element) {
-        elements++;
         RTreeNode node = root;
         Stack<RTreeNode> path = new Stack<>();
 
@@ -55,6 +53,14 @@ public class RTree implements Serializable {
         }
     }
 
+    /**
+     * Traverses the RTree and returns MapElements with minimum bounding rectangles that overlap with the rectangle
+     * given by a minimum and maximum point. Min and max are float arrays consisting of [0] as x-coordinate and [1]
+     * as y-coordinate.
+     * @param min float array consisting of [0] as x-coordinate and [1] as a y-coordinate
+     * @param max float array consisting of [0] as x-coordinate and [1] as a y-coordinate
+     * @return A List of MapElements
+     */
     public List<MapElement> query(float[] min, float[] max) {
         List<MapElement> results = new ArrayList<>();
 
@@ -80,6 +86,11 @@ public class RTree implements Serializable {
         return results;
     }
 
+    /**
+     * Traverses the RTree to find the MapElement closest to the given point.
+     * @param point A MapPoint consisting of an x-coordinate and y-coordinate.
+     * @return Under the current implementation, it will always return a MapRoadSegment
+     */
     public MapElement findNearestNeighbor(MapPoint point) {
         float[] q = point.getMinPoint();
         PriorityQueue<NodeDistanceInfo<RTreeNode>> nearestNodes = new PriorityQueue<>();
@@ -121,10 +132,22 @@ public class RTree implements Serializable {
         return nearestNeighbor;
     }
 
+    /**
+     * Creates a NodeDistanceInfo object for each RTreeNode given and inserts them into a priority queue.
+     * @param pq A priority queue of NodeDistanceInfo containing RTreeNodes
+     * @param children A List of RTreeNodes
+     * @param q A point as a float array where [0] is the x-coordinate and [1] is the y-coordinate
+     */
     private void enqueueChildNodes(PriorityQueue<NodeDistanceInfo<RTreeNode>> pq, List<RTreeNode> children, float[] q) {
         pq.addAll(children.stream().map(node -> new NodeDistanceInfo<>(q, node)).toList());
     }
 
+    /**
+     * Finds the two elements of the given list of nodes that would create the most area increase and returns them.
+     * @param nodes A list of elements that extend the interface IBoundingBox
+     * @return Returns a Pair of elements of the given type
+     * @param <type> The type of the given elements
+     */
     private <type extends IBoundingBox> Pair<type, type> findCandidates(List<type> nodes) {
         float maxArea = -Float.MAX_VALUE;
         type candidate1 = null, candidate2 = null;
@@ -139,6 +162,7 @@ public class RTree implements Serializable {
                         e1.getMaxPoint(),
                         e2.getMinPoint(),
                         e2.getMaxPoint());
+
                 if (areaIncrease > maxArea) {
                     maxArea = areaIncrease;
                     candidate1 = e1;
@@ -149,7 +173,15 @@ public class RTree implements Serializable {
         return new Pair<>(candidate1, candidate2);
     }
 
-    // Takes two candidates to decide the splits and two nodes to divide the children to.
+    /**
+     * Finds and distributes elements from a list between two candidate elements of a given type.
+     * The elements are distributed to the element that would cause the least area increase of their
+     * minimal bounding rectangle.
+     * @param candidates A Pair of two elements of the given type
+     * @param children A list of elements of the given type
+     * @return A Pair of lists containing the divided elements
+     * @param <type> The given type that implement the interface IBoundingBox
+     */
     private <type extends IBoundingBox> Pair<List<type>, List<type>> divideChildren(Pair<type, type> candidates, List<type> children) {
         List<type> candidate1Children = new ArrayList<>();
         candidate1Children.add(candidates.getKey());
@@ -168,9 +200,6 @@ public class RTree implements Serializable {
                     candidates.getValue().getMinPoint(),
                     candidates.getValue().getMaxPoint(),
                     c.getMinPoint(), c.getMaxPoint());
-
-            //if (candidate1Children.size() < minChildren) candidate1Children.add(c);
-            //else if (candidate2Children.size() < minChildren) candidate2Children.add(c);
             if (c1Area > c2Area) {
                 candidate2Children.add(c);
             } else {
@@ -183,8 +212,8 @@ public class RTree implements Serializable {
     /**
      * Takes RTreeNode and splits its contents into two, using Quadratic Split.
      * It manipulates the given node and returns the other.
-     * @param node
-     * @return
+     * @param node An RTreeNode
+     * @return An RTreeNode with the other part of the split
      * @param <type>
      */
     private <type extends IBoundingBox> RTreeNode split(RTreeNode node) {
@@ -220,70 +249,13 @@ public class RTree implements Serializable {
         return newNode;
     }
 
-    /*
-        In an attempt to make the code more readable and avoid repetition, I have attempted
-        to merge the functionality of these methods in a single new method: split()
-        These methods create a lot of repetition and are meant for handling non-leaf and leaf
-        splits.
+    /**
+     * Iterates over a list of RTreeNodes to find the best fitting node for the given bounding rectangle
+     * @param nodes A List of RTreeNodes
+     * @param childMin The minimum point of the bounding rectangle
+     * @param childMax The maximum point of the bounding rectangle
+     * @return Returns the RTreeNode where the given bounding rectangle will create the least amount of increased area.
      */
-    /*
-    private void splitRoot() {
-        // Debugging
-        nodes++;
-        rootSplit++;
-
-        RTreeNode newRoot = new RTreeNode(maxChildren);
-        RTreeNode splitNode;
-        if (root.isLeaf())  splitNode = splitLeaf(root);
-        else splitNode = splitParent(root);
-
-        newRoot.addChild(root);
-        newRoot.addChild(splitNode);
-
-        root = newRoot;
-    }
-
-    private RTreeNode splitParent(RTreeNode node) {
-        // Debugging
-        nodes++;
-
-        RTreeNode newNode = new RTreeNode(maxChildren);
-        Pair<RTreeNode, RTreeNode> candidates = findCandidates(node.children);
-        RTreeNode candidate1 = candidates.getKey(), candidate2 = candidates.getValue();
-        Pair<List<RTreeNode>, List<RTreeNode>> dividedChildren = divideChildren(candidates, node.children);
-
-
-        node.children = dividedChildren.getKey();
-        newNode.children = dividedChildren.getValue();
-
-        newNode.updateBoundingBox();
-        node.updateBoundingBox();
-
-        return newNode;
-    }
-
-
-    private RTreeNode splitLeaf(RTreeNode node) {
-        // Debugging
-        nodes++;
-
-        RTreeNode newNode = new RTreeNode(maxChildren);
-
-        Pair<MapElement, MapElement> candidates = findCandidates(node.elements);
-        MapElement candidate1 = candidates.getKey(), candidate2 = candidates.getValue();
-        Pair<List<MapElement>, List<MapElement>> dividedElements = divideChildren(candidates, node.elements);
-
-        node.elements = dividedElements.getKey();
-        newNode.elements = dividedElements.getValue();
-
-        newNode.updateBoundingBox();
-        node.updateBoundingBox();
-
-        return newNode;
-    }
-
-     */
-
     private RTreeNode pickChild(List<RTreeNode> nodes, float[] childMin, float[] childMax) {
         // Find overlapping elements in list
         List<RTreeNode> overlap = new ArrayList<>();
@@ -331,6 +303,14 @@ public class RTree implements Serializable {
         return candidate;
     }
 
+    /**
+     * Calculates whether two rectangles, given by the minimum and maximum point has any overlap
+     * @param currentMin Minimum point of the first rectangle
+     * @param currentMax Maximum point of the first rectangle
+     * @param otherMin Minimum point of the other rectangle
+     * @param otherMax Maximum point of the other rectangle
+     * @return Returns a boolean value representational of whether the rectangles overlap
+     */
     public boolean hasOverlap(float[] currentMin, float[] currentMax, float[] otherMin, float[] otherMax) {
         boolean overlapX = currentMin[0] <= otherMax[0] && currentMax[0] >= otherMin[0];
         boolean overlapY = currentMin[1] <= otherMax[1] && currentMax[1] >= otherMin[1];
@@ -338,10 +318,25 @@ public class RTree implements Serializable {
         return overlapX && overlapY;
     }
 
+    /**
+     * Calculates the area of a rectangle
+     * @param min Minimum point of the given rectangle
+     * @param max Maximum point of the given rectangle
+     * @return Area as a float
+     */
     private float calculateArea(float[] min, float[] max) {
         return (max[0] - min[0]) * (max[1] - min[1]);
     }
 
+    /**
+     * Calculates the area increase created by using the minimum x and y-coordinates and maximum x and y-coordinates
+     * of two rectangles.
+     * @param currentMin Minimum point of the first rectangle
+     * @param currentMax Maximum point of the first rectangle
+     * @param otherMin Minimum point of the other rectangle
+     * @param otherMax Maximum point of the other rectangle
+     * @return The area increase as a float
+     */
     private float calculateAreaIncrease(float[] currentMin, float[] currentMax, float[] otherMin, float[] otherMax) {
         float currentArea = calculateArea(currentMin, currentMax);
         float otherArea = calculateArea(otherMin, otherMax);
@@ -352,6 +347,10 @@ public class RTree implements Serializable {
         return newArea - currentArea - otherArea;
     }
 
+    /**
+     * Enables the query to also return minimum bounding rectangles of leaves as MapElements
+     * @param debug A boolean whether to enable or disable debugging
+     */
     public void setDebug(boolean debug) {
         this.debug = debug;
     }

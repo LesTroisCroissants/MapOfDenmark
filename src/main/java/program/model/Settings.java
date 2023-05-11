@@ -2,6 +2,7 @@ package program.model;
 
 import program.view.*;
 import program.view.themes.*;
+import program.model.Model.MOT;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -10,13 +11,12 @@ import java.util.Arrays;
  * Saves the settings for the program
  */
 public class Settings implements Serializable {
-    private final String[] legalModesOfTransportation = new String[]{"w","b","c"};
     private Theme theme;
-    private String modeOfTransportation;
+    private MOT modeOfTransportation;
 
     public Settings(){
         theme = new BrookTheme();
-        modeOfTransportation = "b";
+        modeOfTransportation = MOT.CAR;
     }
 
     /**
@@ -42,11 +42,8 @@ public class Settings implements Serializable {
      * Sets the mode of transportation for route-planning
      * @param newModeOfTransportation
      */
-    public void setModeOfTransportation(String newModeOfTransportation){
-        if (Arrays.asList(legalModesOfTransportation).contains(newModeOfTransportation))
-            modeOfTransportation = newModeOfTransportation;
-        else
-            throw new IllegalArgumentException("Mode of transportation is not defined");
+    public void setModeOfTransportation(MOT newModeOfTransportation){
+        modeOfTransportation = newModeOfTransportation;
     }
 
     /**
@@ -61,7 +58,7 @@ public class Settings implements Serializable {
      * Returns the current mode of transportation
      * @return
      */
-    public String getModeOfTransportation(){
+    public MOT getModeOfTransportation(){
         return modeOfTransportation;
     }
 }
