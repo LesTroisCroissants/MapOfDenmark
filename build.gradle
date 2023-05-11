@@ -49,9 +49,8 @@ jacocoTestCoverageVerification {
 }
 
 
-// TODO run config with X gb of ram
 tasks.withType(JavaExec).configureEach {
-    jvmArgs = ['-Xms512m', '-Xmx10240m']
+    jvmArgs = ['-Xmx8192m']
 }
 
 tasks.withType(JavaCompile).configureEach {
@@ -61,6 +60,7 @@ tasks.withType(JavaCompile).configureEach {
 tasks.named('test') {
     // Use JUnit Platform for unit tests.
     useJUnitPlatform()
+    jvmArgs = ['-Xmx8192m']
 }
 
 tasks.withType(Test).configureEach {
