@@ -6,6 +6,7 @@ import program.view.Theme;
 import javax.xml.stream.XMLStreamException;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class Model implements ModelContact{
@@ -231,7 +232,13 @@ public class Model implements ModelContact{
      */
     @Override
     public Iterable<String> getPOIs() {
-        return poiRegistry.getIds();
+        ArrayList<String> pois = new ArrayList<>();
+        Iterable<String> ids = poiRegistry.getIds();
+        for (String id : ids) {
+            pois.add(id + " : " + poiRegistry.getPOI(id));
+        }
+
+        return pois;
     }
 
     /**
