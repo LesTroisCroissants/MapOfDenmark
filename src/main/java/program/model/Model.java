@@ -227,14 +227,13 @@ public class Model implements ModelContact{
     }
 
     /**
-     * Returns all IDs for POIs
-     * @return Iterable of IDs
+     * Returns all POIs
+     * @return Iterable of POI Strings
      */
     @Override
     public Iterable<String> getPOIs() {
         ArrayList<String> pois = new ArrayList<>();
-        Iterable<String> ids = poiRegistry.getIds();
-        for (String id : ids) {
+        for (String id : poiRegistry.getIds()) {
             pois.add(id + " : " + poiRegistry.getPOI(id));
         }
 
