@@ -45,11 +45,10 @@ public class Model implements ModelContact{
 
     /**
      * Writes a .obj file based on the opened file
-     * @param fileName name of the file to be saved
-     * @throws IOException
+     * @param filePath name of the file to be saved
      */
-    private void save(String fileName) throws IOException {
-        try(ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(fileName))) {
+    private void save(String filePath) throws IOException {
+        try(ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(filePath))) {
             out.writeObject(storage);
             out.writeObject(addressBook);
             out.writeObject(edges);
@@ -58,18 +57,15 @@ public class Model implements ModelContact{
 
     /**
      * Opens a file; either .obj or .osm (.osm.zip)
-     * @param fileName
-     * @throws IOException
-     * @throws XMLStreamException
-     * @throws ClassNotFoundException
+     * @param filePath the path of the file to be opened
      */
-    private void open(String fileName) throws IOException, XMLStreamException, ClassNotFoundException {
+    private void open(String filePath) throws IOException, XMLStreamException, ClassNotFoundException {
         addressBook.clear();
         edges.clear();
         storage = null;
 
-        if(fileName.endsWith(".obj")){
-            try (ObjectInputStream in = new ObjectInputStream(new BufferedInputStream(new FileInputStream(fileName)))){
+        if(filePath.endsWith(".obj")){
+            try (ObjectInputStream in = new ObjectInputStream(new BufferedInputStream(new FileInputStream(filePath)))){
                 storage = (TreeStorage) in.readObject();
                 AddressBook ab = (AddressBook) in.readObject();
                 edges = (List<DirectedEdge>) in.readObject();
@@ -81,17 +77,17 @@ public class Model implements ModelContact{
                 }
             }
         } else {
-            storage = DataParser.parse(fileName, addressBook, edges);
-            File objfile = new File(fileName + ".obj");
+            storage = DataParser.parse(filePath, addressBook, edges);
+            File objfile = new File(filePath + ".obj");
             if(!objfile.exists()){
-                save(fileName + ".obj");
+                save(filePath + ".obj");
                 edges.clear();
             }
         }
     }
 
     /**
-     * Sets the elements to draw by queriyng the data storage
+     * Sets the elements to draw by querying the data storage
      */
     public void setDrawingArea(float[] p1, float[] p2, int zoomLevel) {
         TreeStorage.detail detail;
@@ -109,13 +105,13 @@ public class Model implements ModelContact{
      * @param to end destination
      */
     public void planRoute(MapPoint from, MapPoint to) {
-        var startTime = System.nanoTime();
+        //var startTime = System.nanoTime();
         Vertex start = storage.nearestVertex(from);
         Vertex end = storage.nearestVertex(to);
         BiDirectionalDijkstra bididi = new BiDirectionalDijkstra(start, end, settings.getModeOfTransportation());
         plannedRoute = bididi.getPath();
         instructions = bididi.getInstructions();
-        System.out.println("route planning time: " + (System.nanoTime()-startTime) / 1_000_000);
+        //System.out.println("route planning time: " + (System.nanoTime()-startTime) / 1_000_000);
 
         middlePoint = AuxMath.calculateMiddlePoint(from.getMaxPoint(),to.getMaxPoint());
     }
@@ -187,11 +183,11 @@ public class Model implements ModelContact{
 
     /**
      * Opens a new file during the runtime of the program
-     * @param fileName path to the file to be loaded
+     * @param filePath path to the file to be loaded
      */
-    public void loadNewFile(String fileName) {
+    public void loadNewFile(String filePath) {
         try {
-            open(fileName);
+            open(filePath);
         } catch (IOException | XMLStreamException | ClassNotFoundException e) {
             throw new IllegalArgumentException("Unable to load file");
         }

@@ -29,7 +29,7 @@ public interface ModelContact {
     float getMaxLat();
     void setDebug(boolean debug, List<String> trees);
 
-    void loadNewFile(String fileName);
+    void loadNewFile(String filePath);
 
     MapPoint getMiddlePoint();
 }

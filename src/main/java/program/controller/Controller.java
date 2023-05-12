@@ -12,7 +12,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
-import program.model.AddressBuilder;
 import program.model.AddressParser;
 import program.model.Model;
 import program.model.ModelContact;

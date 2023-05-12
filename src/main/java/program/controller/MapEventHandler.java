@@ -5,7 +5,6 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
 import program.model.ModelContact;
@@ -142,7 +141,7 @@ public class MapEventHandler {
     }
 
     /**
-     * Adds a listener that detects mouseclicks on CLI to remove filler text
+     * Adds a listener that detects mouse clicks on CLI to remove filler text
      */
     private void addCLIRemoveHelpText() {
         controller.getTextField().setOnMousePressed(e -> {

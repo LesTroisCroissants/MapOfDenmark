@@ -1,7 +1,6 @@
 package program.model;
 
 import program.shared.Address;
-import program.shared.MapElement;
 import program.shared.MapPoint;
 import program.shared.Point;
 
@@ -19,7 +18,6 @@ public class AddressBook implements Serializable {
 
     /**
      * Returns the singleton instance of the address book
-     * @return
      */
 
     public static AddressBook getInstance() {
@@ -33,7 +31,6 @@ public class AddressBook implements Serializable {
 
     /**
      * Sets the current instance of the address book; used for opening with .obj files
-     * @param _addressBook
      */
     public static void setInstance(AddressBook _addressBook) {
         addressBook = _addressBook;
@@ -41,8 +38,8 @@ public class AddressBook implements Serializable {
 
     /**
      * Adds an address to the address book
-     * @param address
-     * @param location
+     * @param address address to add
+     * @param location location of the address
      */
     public void addAddress(Address address, Point location) {
         tst.put(address, location);
@@ -50,8 +47,6 @@ public class AddressBook implements Serializable {
 
     /**
      * Takes an address object and returns associated MapPoint
-     * @param address
-     * @return
      */
     public MapPoint addressSearch(Address address) {
         Map<String, Point> addresses = tst.get(address);
@@ -72,7 +67,7 @@ public class AddressBook implements Serializable {
     }
 }
 
-//Ternary search trie
+//Ternary search trie | Heavily inspired by Algorithms Fourth Edition by Sedgewick & Wayne
 class Trie implements Serializable {
     Node root;
 
@@ -82,10 +77,10 @@ class Trie implements Serializable {
     }
 
     Node put(Node node, int depth, String street, String restOfAddress, Point location){
-        char c = street.charAt(depth);
-        if (node == null) node = new Node(c);
-        if (c < node.character) node.left = put(node.left, depth, street, restOfAddress, location);
-        else if (c > node.character) node.right = put(node.right, depth, street, restOfAddress, location);
+        char character = street.charAt(depth);
+        if (node == null) node = new Node(character);
+        if (character < node.character) node.left = put(node.left, depth, street, restOfAddress, location);
+        else if (character > node.character) node.right = put(node.right, depth, street, restOfAddress, location);
         else if (depth < street.length() - 1) node.middle = put(node.middle, depth+1, street, restOfAddress, location);
         else {
             if (node.addresses == null) node.addresses = new HashMap<>();
@@ -102,10 +97,10 @@ class Trie implements Serializable {
     }
 
     Node get(Node node, String query, int depth) {
-        char c = query.charAt(depth);
+        char character = query.charAt(depth);
         if (node == null) throw new IllegalArgumentException("No such address exists");
-        if (c < node.character) return get(node.left, query, depth);
-        else if (c > node.character) return get(node.right, query, depth);
+        if (character < node.character) return get(node.left, query, depth);
+        else if (character > node.character) return get(node.right, query, depth);
         else if (depth < query.length() - 1) return get(node.middle, query, depth + 1);
 
         while (true){
@@ -122,7 +117,7 @@ class Node implements Serializable {
     char character;
     Map<String, Point> addresses;
 
-    Node (char c) {
-        character = c;
+    Node (char character) {
+        this.character = character;
     }
 }

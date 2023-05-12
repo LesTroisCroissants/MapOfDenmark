@@ -1,7 +1,6 @@
 package program.shared;
 
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
 
 /**
  * MapShape intended to be filled out

@@ -49,6 +49,13 @@ public class TreeStorage implements Serializable {
         other = new RTree(maxChildren);
     }
 
+    /**
+     * Returns a list of mapelements for the given bounds and level of detail
+     * @param min minpoint
+     * @param max maxpoint
+     * @param detail level of detail
+     * @return list of MapElement
+     */
     public List<MapElement> query(float[] min, float[] max, detail detail) {
         List<MapElement> drawFirst = new ArrayList<>();
         List<MapElement> drawLast = new ArrayList<>();
@@ -74,14 +81,19 @@ public class TreeStorage implements Serializable {
         return results;
     }
 
+    /**
+     * Returns the MapRoadSegment closest to a MapPoint
+     * @param q the query point
+     * @return the closest MapRoadSegment
+     */
     public MapRoadSegment nearestNeighbor(MapPoint q) {
         //var start = System.nanoTime();
         List<MapRoadSegment> nearestSegments = new ArrayList<>();
         // Add from all road trees
-        nearestSegments.add((MapRoadSegment) primary.findNearestNeighbor(q));
-        nearestSegments.add((MapRoadSegment) secondary.findNearestNeighbor(q));
-        nearestSegments.add((MapRoadSegment) tertiary.findNearestNeighbor(q));
-        nearestSegments.add((MapRoadSegment) otherRoads.findNearestNeighbor(q));
+        nearestSegments.add(primary.findNearestNeighbor(q));
+        nearestSegments.add(secondary.findNearestNeighbor(q));
+        nearestSegments.add(tertiary.findNearestNeighbor(q));
+        nearestSegments.add(otherRoads.findNearestNeighbor(q));
 
         MapRoadSegment nnRoad = null;
         float nnDist = Float.POSITIVE_INFINITY;
@@ -105,9 +117,14 @@ public class TreeStorage implements Serializable {
         return nnRoad;
     }
 
-    public Vertex nearestVertex(MapPoint point) {
-        float[] p = point.getMinPoint();
-        MapRoadSegment road = nearestNeighbor(point);
+    /**
+     * Returns the vertex closest to a query point
+     * @param q query point
+     * @return the vertex closest to the point
+     */
+    public Vertex nearestVertex(MapPoint q) {
+        float[] p = q.getMinPoint();
+        MapRoadSegment road = nearestNeighbor(q);
         float distA = AuxMath.calculateDistance(road.getVertexA(), new Vertex(p[0], p[1]));
         float distB = AuxMath.calculateDistance(road.getVertexB(), new Vertex(p[0], p[1]));
         return distA < distB ? road.getVertexA() : road.getVertexB();

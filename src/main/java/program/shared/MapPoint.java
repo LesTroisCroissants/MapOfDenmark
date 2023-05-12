@@ -1,11 +1,6 @@
 package program.shared;
 
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
-
-// import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Represents a point on the map

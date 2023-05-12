@@ -17,6 +17,7 @@ public class MapRoadSegment extends MapElement implements Serializable {
     private final float distance;
     boolean carAllowed;
     boolean onlyCarAllowed;
+
     public MapRoadSegment(Vertex a, Vertex b, String name, String type, int maxSpeed, boolean carAllowed, boolean onlyCarAllowed) {
         super(type);
         minPoint = new float[]{
@@ -25,6 +26,7 @@ public class MapRoadSegment extends MapElement implements Serializable {
         maxPoint = new float[]{
                 Math.max(a.getX(), b.getX()), Math.max(a.getY(), b.getY())
         };
+
         this.a = a;
         this.b = b;
         this.name = name;
@@ -34,8 +36,6 @@ public class MapRoadSegment extends MapElement implements Serializable {
         this.maxSpeed = maxSpeed;
         this.distance = AuxMath.calculateDistance(a, b);
     }
-
-
 
     @Override
     public void draw(GraphicsContext context) {
@@ -60,14 +60,16 @@ public class MapRoadSegment extends MapElement implements Serializable {
     public float getDistance() {
         return distance;
     }
+
     public int getMaxSpeed(){
         return maxSpeed;
     }
+
     public boolean isCarAllowed(){
         return carAllowed;
     }
+
     public boolean isOnlyCarAllowed(){
         return onlyCarAllowed;
     }
-
 }

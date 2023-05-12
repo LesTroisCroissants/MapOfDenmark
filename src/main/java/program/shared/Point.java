@@ -3,7 +3,7 @@ package program.shared;
 import java.io.Serializable;
 
 /**
- * Represents a 2-dimensional point with an optional id; not that it is NOT a MapElement
+ * Represents a 2-dimensional point with an optional id; note that it is NOT a MapElement
  */
 public class Point implements Serializable {
     private final float x, y;
