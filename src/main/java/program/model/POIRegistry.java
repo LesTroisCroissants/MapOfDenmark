@@ -1,8 +1,6 @@
 package program.model;
 
 import program.shared.Address;
-import program.shared.MapElement;
-import program.shared.MapPoint;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,9 +38,6 @@ public class POIRegistry {
 
     /**
      * Returns the Address corresponding to a given id or throws an exception if the id has not been set
-     * @param id
-     * @return
-     * @throws IllegalArgumentException
      */
     public Address getPOI(String id) {
         if (pointsOfInterest.containsKey(id)) return pointsOfInterest.get(id);
@@ -51,7 +46,6 @@ public class POIRegistry {
 
     /**
      * Returns an Iterable over all POI ids
-     * @return
      */
     public Iterable<String> getIds(){
         return pointsOfInterest.keySet();
@@ -59,7 +53,6 @@ public class POIRegistry {
 
     /**
      * Returns an Iterable of all MapElements associated with a POI
-     * @return
      */
     public Iterable<Address> getLocations(){
         return pointsOfInterest.values();

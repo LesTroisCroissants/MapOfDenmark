@@ -2,9 +2,6 @@ package program.shared;
 
 import javafx.scene.canvas.GraphicsContext;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * MapShape intended to be drawn as connected points
  */

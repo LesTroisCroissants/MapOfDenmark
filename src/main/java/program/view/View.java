@@ -48,7 +48,6 @@ public class View implements ViewContact {
 
     /**
      * Returns the singleton instance of View
-     * @return
      */
     public static ViewContact getInstance(){
         if (instance == null) throw new RuntimeException();
@@ -58,9 +57,6 @@ public class View implements ViewContact {
     /**
      * Loads the fxml from a given path and returns a scene based off the GridPane root of the fxml file.
      * Binds the window size between the GridPane and Scene
-     * @param fxmlPath
-     * @return
-     * @throws IOException
      */
     private Scene loadFXML(String fxmlPath) throws IOException {
         //FXMLLoader also creates controller

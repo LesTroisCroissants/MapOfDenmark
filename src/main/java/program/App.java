@@ -13,7 +13,7 @@ public class App extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-        View.instantiateView(primaryStage);
         primaryStage.setTitle("Retroveje");
+        View.instantiateView(primaryStage);
     }
 }

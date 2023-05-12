@@ -7,6 +7,7 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.zip.ZipInputStream;
 
@@ -19,33 +20,33 @@ public class DataParser{
     private static TreeStorage treeStorage;
     private static List<DirectedEdge> edges;
 
-    public static TreeStorage parse(String fileName, AddressBook _addressBook, List<DirectedEdge> _edges) throws IOException, XMLStreamException {
+    public static TreeStorage parse(String filePath, AddressBook _addressBook, List<DirectedEdge> _edges) throws IOException, XMLStreamException {
         treeStorage = new TreeStorage();
         edges = _edges;
         addressBook = _addressBook;
-        if (fileName.endsWith(".zip")) {
-            parseZip(fileName);
-        } else if (fileName.endsWith(".osm")) {
-            parseOSM(fileName);
+        if (filePath.endsWith(".zip")) {
+            parseZip(filePath);
+        } else if (filePath.endsWith(".osm")) {
+            parseOSM(filePath);
         }
 
         return treeStorage;
     }
 
-    private static void parseZip(String fileName) throws IOException, XMLStreamException {
-        var input = new ZipInputStream(new FileInputStream(fileName));
+    private static void parseZip(String filePath) throws IOException, XMLStreamException {
+        var input = new ZipInputStream(new FileInputStream(filePath));
         input.getNextEntry();
         parseOSM(input);
     }
 
-    private static void parseOSM(String fileName) throws FileNotFoundException, XMLStreamException, UnsupportedEncodingException {
-        parseOSM(new FileInputStream(fileName));
+    private static void parseOSM(String filePath) throws FileNotFoundException, XMLStreamException {
+        parseOSM(new FileInputStream(filePath));
     }
 
 
     private static List<Point> nodes;
-    private static void parseOSM(InputStream inputStream) throws XMLStreamException, UnsupportedEncodingException {
-        XMLStreamReader input = XMLInputFactory.newInstance().createXMLStreamReader(new InputStreamReader(inputStream, "UTF-8"));
+    private static void parseOSM(InputStream inputStream) throws XMLStreamException {
+        XMLStreamReader input = XMLInputFactory.newInstance().createXMLStreamReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
 
         nodes = new ArrayList<>(15_000_000);
 
@@ -143,11 +144,10 @@ public class DataParser{
                             case "highway" -> {
                                 type = tagKey;
                                 subType = tagValue;
-                                //if (subType.equals("service")) break;
                                 isRoad = true;
                                 switch (tagValue){
                                     case "motorway", "trunk" -> {
-                                        subType = "primary"; // quick fix to draw motorways like primary roads
+                                        subType = "primary";
                                         onlyCarAllowed = true;
                                         if (tagValue.equals("motorway")){
                                             speed = 130;

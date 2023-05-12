@@ -103,14 +103,14 @@ class TreeStorageTest {
     @Test
     void nearestNeighborTest() {
         insertVerticesAndRoads();
-        MapRoadSegment nearest = storage.nearestNeighbor(new MapPoint(1.5F,1,"highway"));
+        MapRoadSegment nearest = storage.nearestNeighbor(new MapPoint(1.5F,1F,"highway"));
         assertEquals("G", nearest.getName());
     }
 
     @Test
     void nearestVertexTest() {
         insertVerticesAndRoads();
-        Vertex nearest = storage.nearestVertex(new MapPoint(5,7,"highway"));
+        Vertex nearest = storage.nearestVertex(new MapPoint(5F,7F,"highway"));
         assertEquals("4.0 4.0", nearest.toString());
     }
 }

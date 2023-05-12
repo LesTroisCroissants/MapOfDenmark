@@ -69,9 +69,6 @@ public class RTree implements Serializable {
             if (current.isLeaf()) {
                if (current.getElementsSize() > 0) {
                    results.addAll(current.elements);
-                   /*for (MapElement e : current.elements) {
-                       if (hasOverlap(min, max, e.getMinPoint(), e.getMaxPoint())) results.add(e);
-                   }*/
                    if (debug) results.add(new MapDebugMBR(current.getMinPoint(), current.getMaxPoint()));
                }
             } else {
@@ -92,24 +89,28 @@ public class RTree implements Serializable {
     public MapRoadSegment findNearestNeighbor(MapPoint point) {
         float[] q = point.getMinPoint();
         PriorityQueue<NodeDistanceInfo<RTreeNode>> nearestNodes = new PriorityQueue<>();
-        NodeDistanceInfo<RTreeNode> mmd = null;
+        NodeDistanceInfo<RTreeNode> nearestMinMaxDistance = null;
 
         if (!root.isLeaf()){
             enqueueChildNodes(nearestNodes, root.children, q);
-            mmd = nearestNodes.peek();
+            nearestMinMaxDistance = nearestNodes.peek();
+        } else {
+            nearestNodes.add(new NodeDistanceInfo<>(q, root));
+            nearestMinMaxDistance = nearestNodes.peek();
         }
 
-        float nnDist = Float.MAX_VALUE;
+
+        float nearestNeighborDistance = Float.MAX_VALUE;
         MapElement nearestNeighbor = null;
 
         while (!nearestNodes.isEmpty()) {
             NodeDistanceInfo<RTreeNode> current = nearestNodes.poll();
-            if (current.minDist > mmd.minMaxDist) continue;
-            if (current.minMaxDist < mmd.minMaxDist /*&& current.minMaxDist != 0*/) {
-                mmd = current;
+            if (current.minDist > nearestMinMaxDistance.minMaxDist) continue;
+            if (current.minMaxDist < nearestMinMaxDistance.minMaxDist) {
+                nearestMinMaxDistance = current;
 
             }
-            if (nearestNeighbor != null && current.minDist > nnDist) continue;
+            if (nearestNeighbor != null && current.minDist > nearestNeighborDistance) continue;
             if (!current.node.isLeaf()) enqueueChildNodes(nearestNodes, current.node.children, q);
             else {
                 PriorityQueue<NodeDistanceInfo<MapElement>> elements = new PriorityQueue<>();
@@ -117,12 +118,11 @@ public class RTree implements Serializable {
                 while (!elements.isEmpty()) {
                     NodeDistanceInfo<MapElement> elementInfo = elements.poll();
                     MapElement element = elementInfo.node;
-                    //if (elementInfo.minDist > nnDist) continue;
 
                     float distToLine = AuxMath.pointToRoadDistance(q, (MapRoadSegment) element);
-                    if (distToLine < nnDist) {
+                    if (distToLine < nearestNeighborDistance) {
                         nearestNeighbor = element;
-                        nnDist = distToLine;
+                        nearestNeighborDistance = distToLine;
                     }
                 }
             }
@@ -217,9 +217,10 @@ public class RTree implements Serializable {
     private <type extends IBoundingBox> RTreeNode split(RTreeNode node) {
         List<type> nodes = node.isLeaf() ? (ArrayList<type>) node.elements : (ArrayList<type>) node.children;
         RTreeNode newNode = new RTreeNode(maxChildren);
+
         // Quadratic split finds the two elements that create the most area.
         Pair<type, type> candidates = findCandidates(nodes);
-        // type candidate1 = candidates.getKey(), candidate2 = candidates.getValue();
+
         // the nodes/elements are divided amongst the two candidates.
         Pair<List<type>, List<type>> dividedChildren = divideChildren(candidates, nodes);
 

@@ -19,14 +19,14 @@ public class DirectedEdge implements Serializable {
     }
 
     /**
-     * Returns the from vertex of the directed edge
+     * Returns the from-vertex of the directed edge
      */
     public Vertex fromVertex() {
         return vertexFrom;
     }
 
     /**
-     * Returns the to vertex of the directed edge
+     * Returns the to-vertex of the directed edge
      */
     public Vertex toVertex() {
         return vertexTo;

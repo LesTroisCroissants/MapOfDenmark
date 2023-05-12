@@ -7,46 +7,50 @@ import program.shared.Point;
 public class AuxMath {
     /**
      * Calculates the shortest distance from a point to a line segment
-     * @param p the point
+     * @param point the point
      * @param road the line segment represented as a MapRoadSegment
      * @return the shortest distance from the point to the line segment
      */
-    public static float pointToRoadDistance(float[] p, MapRoadSegment road) {
+    public static float pointToRoadDistance(float[] point, MapRoadSegment road) {
         /*
          * Source for math used
          *  https://stackoverflow.com/questions/849211/shortest-distance-between-a-point-and-a-line-segment
          */
 
-        Point p1 = road.getVertexA();
-        Point p2 = road.getVertexB();
+        Point startOfRoad = road.getVertexA();
+        Point endOfRoad = road.getVertexB();
 
-        float A = p[0] - p1.getX();
-        float B = p[1] - p1.getY();
-        float C = p2.getX() - p1.getX();
-        float D = p2.getY() - p1.getY();
+        // Vector AB
+        float A = point[0] - startOfRoad.getX();
+        float B = point[1] - startOfRoad.getY();
 
-        float dot = A * C + B * D;
+        // Vector CD
+        float C = endOfRoad.getX() - startOfRoad.getX();
+        float D = endOfRoad.getY() - startOfRoad.getY();
+
+        float dotProduct = A * C + B * D;
         float lengthSquared = C * C + D * D;
-        float param = -1;
-        if (lengthSquared != 0) param = dot / lengthSquared;
 
-        float xx, yy;
+        // End of road and start of road will never be the same, thus this will never be a division by zero
+        float param = dotProduct / lengthSquared;
+
+        float x, y;
 
         if (param < 0) {
-            xx = p1.getX();
-            yy = p1.getY();
+            x = startOfRoad.getX();
+            y = startOfRoad.getY();
         }
         else if (param > 1) {
-            xx = p2.getX();
-            yy = p2.getY();
+            x = endOfRoad.getX();
+            y = endOfRoad.getY();
         }
         else {
-            xx = p1.getX() + param * C;
-            yy = p1.getY() + param * D;
+            x = startOfRoad.getX() + param * C;
+            y = startOfRoad.getY() + param * D;
         }
 
-        float dx = p[0] - xx;
-        float dy = p[1] - yy;
+        float dx = point[0] - x;
+        float dy = point[1] - y;
         return (float) Math.sqrt(dx * dx + dy * dy);
     }
 
@@ -65,7 +69,7 @@ public class AuxMath {
     }
 
     /**
-     * Calculates the length of a hypothetical cross product vector; used entre autre for determining turning direction
+     * Calculates the length of a hypothetical cross product vector; used among other things for determining turning direction
      * @return a float indicating the length of a hypothetical cross product vector
      */
     public static float lengthOfCrossProductVector(DirectedEdge comingFrom, DirectedEdge goingTo){
@@ -126,6 +130,12 @@ public class AuxMath {
         }
     }
 
+    /**
+     * Calculates the point in the middle of two points
+     * @param from float array representing a point
+     * @param to float array representing the other point
+     * @return the middle point between the two points
+     */
     public static MapPoint calculateMiddlePoint(float[] from, float[] to){
         return new MapPoint((to[0] - from[0])/2 + from[0],  (to[1] - from[1])/2 + from[1], "");
     }

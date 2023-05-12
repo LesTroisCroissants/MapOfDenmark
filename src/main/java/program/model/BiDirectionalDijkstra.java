@@ -40,7 +40,7 @@ public class BiDirectionalDijkstra {
     }
 
     /**
-     *
+     * Finds a legal vertex to start from
      * @param current source vertex
      * @return vertex to use as start point
      */
@@ -64,6 +64,11 @@ public class BiDirectionalDijkstra {
         return null;
     }
 
+    /**
+     * Finds a legal vertex to arrive at
+     * @param current destination vertex
+     * @return vertex to use as end point
+     */
     private Vertex findEndVertex(Vertex current){
         HashSet<Vertex> visited = new HashSet<>();
         ArrayDeque<Vertex> vertices = new ArrayDeque<>();
@@ -167,7 +172,7 @@ public class BiDirectionalDijkstra {
     /**
      * Evaluates the path between two end-points of an edge back to the source and destination.
      * Sets the currentShortestPath if the presented candidate is a shorter suitor.
-     * @param directedEdge
+     * @param directedEdge bridge that connects the two search spaces
      */
     private void evaluatePath(DirectedEdge directedEdge) {
         Vertex fromVertex = directedEdge.fromVertex();
@@ -247,7 +252,6 @@ public class BiDirectionalDijkstra {
 
     /**
      * Returns a list of all the MapRoadSegments of the found path
-     * @return
      */
     public List<MapRoadSegment> getPath(){
         List<MapRoadSegment> segments = new ArrayList<>();

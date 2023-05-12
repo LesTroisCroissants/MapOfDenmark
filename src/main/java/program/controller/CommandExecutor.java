@@ -141,7 +141,7 @@ public class CommandExecutor {
      */
     public void setDebug(String trees) {
         if (!debug) debug = true;
-        else if (debug && trees.equals("")) debug = false;
+        else if (trees.equals("")) debug = false;
         model.setDebug(debug, Arrays.stream(trees.split(" ")).toList());
         controller.setDebug(debug);
     }

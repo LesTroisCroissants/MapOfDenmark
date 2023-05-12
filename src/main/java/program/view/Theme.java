@@ -3,6 +3,10 @@ package program.view;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
+/**
+ * Represents a blueprint for a display theme for the program
+ * Responsible for preparing the graphics context before drawing
+ */
 public abstract class Theme {
     private Color primary;
     private Color secondary;
@@ -22,6 +26,12 @@ public abstract class Theme {
         this.highlighted = highlighted;
     }
 
+    /**
+     * Prepares the graphics context for drawing MapElements
+     * @param gc graphics context
+     * @param type type of element
+     * @param determinant determinant of the affine transform
+     */
     public void prepareDraw(GraphicsContext gc, String type, double determinant){
         switch (type) {
             case "primary" -> {

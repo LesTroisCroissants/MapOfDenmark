@@ -6,10 +6,10 @@ import static program.model.Model.MOT.*;
  * Interprets a command given as a string and calls relevant methods in the CommandExecutor
  */
 public class CommandParser {
-    private static CommandExecutor c;
+    private static CommandExecutor commandExecutor;
 
     public static void setCommandExecutor(CommandExecutor controller){
-        c = controller;
+        commandExecutor = controller;
     }
 
     public static void parseCommand(String command) throws IllegalCommandException{
@@ -43,77 +43,77 @@ public class CommandParser {
         switch (toExecute) {
                 //Points
             case "":
-                c.addressSearch(address.toLowerCase());
+                commandExecutor.addressSearch(address.toLowerCase());
                 break;
             case "!as":
                 if (address.equals("") || id.equals("")) throw new IllegalCommandException("Command !as takes both an address and an ID");
-                else c.setPOI(id, address);
+                else commandExecutor.setPOI(id, address);
                 break;
 
                 // Route planning
             case "!t":
             case "!to":
                 if (address.equals("")) throw new IllegalCommandException("Command !to takes either an address or a POI ID");
-                else c.planRoute(address, true);
+                else commandExecutor.planRoute(address, true);
                 break;
             case "!instructions":
             case "!i":
                 if (!address.equals("") || !id.equals("")) throw new IllegalCommandException("Command !i does not take any arguments");
-                else c.displayInstructions();
+                else commandExecutor.displayInstructions();
                 break;
             case "!f":
             case "!from":
                 if (address.equals("")) throw new IllegalCommandException("Command !from takes either an address or a POI ID");
-                else c.planRoute(address, false);
+                else commandExecutor.planRoute(address, false);
                 break;
 
                 //Program navigation:
             case "!q":
                 if (!address.equals("") || !id.equals("")) throw new IllegalCommandException("Command !q does not take any arguments");
-                else c.quitSelection();
+                else commandExecutor.quitSelection();
                 break;
             case "!help":
             case "!h":
                 if (!address.equals("") || !id.equals("")) throw new IllegalCommandException("Command !help does not take any arguments");
-                else c.getHelp();
+                else commandExecutor.getHelp();
                 break;
             case "!about":
                 if (!address.equals("") || !id.equals("")) throw new IllegalCommandException("Command !about does not take any arguments");
-                else c.displayProgramInformation();
+                else commandExecutor.displayProgramInformation();
                 break;
             case "!poi":
             case "!p":
                 if (!address.equals("") || !id.equals("")) throw new IllegalCommandException("Command !poi does not take any arguments");
-                else c.displayPOIs();
+                else commandExecutor.displayPOIs();
                 break;
 
                 //Settings:
             case "!walk":
             case "!w":
                 if (!address.equals("") || !id.equals("")) throw new IllegalCommandException("Command !walk does not take any arguments");
-                else c.setModeOfTransportation(WALK);
+                else commandExecutor.setModeOfTransportation(WALK);
                 break;
             case "!bike":
             case "!b":
                 if (!address.equals("") || !id.equals("")) throw new IllegalCommandException("Command !bike does not take any arguments");
-                else c.setModeOfTransportation(BIKE);
+                else commandExecutor.setModeOfTransportation(BIKE);
                 break;
             case "!car":
             case "!c":
                 if (!address.equals("") || !id.equals("")) throw new IllegalCommandException("Command !car does not take any arguments");
-                else c.setModeOfTransportation(CAR);
+                else commandExecutor.setModeOfTransportation(CAR);
                 break;
             case "!display":
             case "!d":
                 if (!address.equals("")) throw new IllegalCommandException("Command !display does not take an address");
-                else c.setDisplay(id);
+                else commandExecutor.setDisplay(id);
                 break;
             case "!load":
-                c.load();
+                commandExecutor.load();
                 break;
 
             case "!debug":
-                c.setDebug(id);
+                commandExecutor.setDebug(id);
                 break;
 
             default:

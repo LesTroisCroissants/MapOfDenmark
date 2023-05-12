@@ -11,6 +11,7 @@ public class RTreeNode implements IBoundingBox, Serializable {
     int maxChildren; //this implementation does not use a minimum limit
     List<RTreeNode> children;
     List<MapElement> elements; //this is null for all nodes except leaves
+
     public RTreeNode(int maxChildren) {
         this.maxChildren = maxChildren;
         min = new float[]{ Float.MAX_VALUE, Float.MAX_VALUE };
@@ -19,13 +20,11 @@ public class RTreeNode implements IBoundingBox, Serializable {
 
     /**
      * Returns the minimum X and Y coordinates of the MBR
-     * @return
      */
     public float[] getMinPoint() { return min; }
 
     /**
      * Returns the maximum X and Y coordinates of the MBR
-     * @return
      */
     public float[] getMaxPoint() { return max; }
 

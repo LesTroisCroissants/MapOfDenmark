@@ -5,7 +5,6 @@ import program.view.themes.*;
 import program.model.Model.MOT;
 
 import java.io.Serializable;
-import java.util.Arrays;
 
 /**
  * Saves the settings for the program
@@ -21,7 +20,7 @@ public class Settings implements Serializable {
 
     /**
      * Sets the display style of the map
-     * @param newTheme
+     * @param newTheme theme to change to
      */
     public void setTheme(String newTheme){
         if (newTheme.equalsIgnoreCase("sakura"))
@@ -40,7 +39,7 @@ public class Settings implements Serializable {
 
     /**
      * Sets the mode of transportation for route-planning
-     * @param newModeOfTransportation
+     * @param newModeOfTransportation mode of transportation to change to
      */
     public void setModeOfTransportation(MOT newModeOfTransportation){
         modeOfTransportation = newModeOfTransportation;
@@ -48,7 +47,6 @@ public class Settings implements Serializable {
 
     /**
      * Returns the current display style
-     * @return
      */
     public Theme getTheme(){
         return theme;
@@ -56,7 +54,6 @@ public class Settings implements Serializable {
 
     /**
      * Returns the current mode of transportation
-     * @return
      */
     public MOT getModeOfTransportation(){
         return modeOfTransportation;
